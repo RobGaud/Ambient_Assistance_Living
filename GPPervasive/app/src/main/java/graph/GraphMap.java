@@ -7,16 +7,21 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 /**
- * Created by Andrea er on 17/04/2016.
+ * Created by Andrea on 17/04/2016.
  */
 public class GraphMap {
     private LinkedHashMap<Region,Node> nodes;
-
+    private Node currentPosition;
+    
     public GraphMap(LinkedHashMap<Region,Node> n){
         nodes = n;
     }
-    //it provides one inizialization at compilation time
-    //of one map
+
+    public void setCurrentPosition(Node currentPosition) { this.currentPosition = currentPosition;    }
+
+    public Node getCurrentPosition() { return currentPosition;  }
+
+    //it provides one inizialization at compilation time of one map
     public void inizializateMaps(){
         Node[] nodes = new Node[7];
 
