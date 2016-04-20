@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import compass.CompassOld;
+import request.blt.permission.BluethootPermission;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -13,6 +14,7 @@ public class MainActivity extends AppCompatActivity{
     private ImageView image;
     private TextView tvHeading;
     private CompassOld cn;
+    BluethootPermission bp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,14 +25,17 @@ public class MainActivity extends AppCompatActivity{
 
         // TextView that will tell the user what degree is he heading
         tvHeading = (TextView) findViewById(R.id.tvHeading);
-       cn = new CompassOld(this,image,tvHeading);
+        cn = new CompassOld(this,image,tvHeading);
         cn.setDirection(0);
+
+        bp = new BluethootPermission(MainActivity.this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         cn.registerListener();
+        bp.onResumeEnableBluetoothPermission();
     }
 
     @Override

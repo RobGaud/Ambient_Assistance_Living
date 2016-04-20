@@ -12,7 +12,7 @@ import java.util.LinkedList;
 public class GraphMap {
     private LinkedHashMap<Region,Node> nodes;
     private Node currentPosition;
-    
+
     public GraphMap(LinkedHashMap<Region,Node> n){
         nodes = n;
     }
