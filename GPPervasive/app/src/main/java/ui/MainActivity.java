@@ -1,9 +1,11 @@
-package com.pervasivesystems.compasstest;
+package ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.pervasivesystems.compasstest.R;
 
 import compass.CompassOld;
 import request.blt.permission.BluethootPermission;

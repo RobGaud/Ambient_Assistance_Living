@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import service.BeaconService;
+
 /**
  * Created by Andrea on 19/04/2016.
  */
@@ -34,10 +36,12 @@ public class BluethootPermission {
             //shouldShowRequestPermissionRationale() = If this function is called on pre-M, it will always return false.
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
                 //If this function is called on pre-M, OnRequestPermissionsResultCallback will be suddenly called with correct PERMISSION_GRANTED or PERMISSION_DENIED result.
-                ActivityCompat.requestPermissions(activity,
+                /*ActivityCompat.requestPermissions(activity,
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        REQUEST_ENABLE_BT);
-                Log.d(TAG_DEBUG,"Build.VERSION.SDK_INT < Build.VERSION_CODES.M");
+                        REQUEST_ENABLE_BT);*/
+                enableBLT();
+                Log.d(TAG_DEBUG," Build.VERSION.SDK_INT < Build.VERSION_CODES.M");
+
             }else{
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(activity,Manifest.permission.ACCESS_COARSE_LOCATION)) {
                     showMessageOKCancel("You need to allow access for BLT scanning on Android 6.0 and above.",
@@ -45,19 +49,18 @@ public class BluethootPermission {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     ActivityCompat.requestPermissions(activity,
-                                            new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
+                                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                                             REQUEST_ENABLE_BT);
                                 }
 
                             });
-                    Log.d(TAG_DEBUG,"Build.VERSION.SDK_INT >= Build.VERSION_CODES.M");
+                    Log.d(TAG_DEBUG, "Build.VERSION.SDK_INT >= Build.VERSION_CODES.M");
                 }
             }
-
+        }else {
+            enableBLT();
         }
-        Log.d(TAG_DEBUG,"");
-        //once i have got the ACCESS_COARSE_LOCATION i can check if the blt is turns on.
-        enableBLT();
+
     }
 
     //return from  enableBluetoothPermission()
@@ -66,7 +69,7 @@ public class BluethootPermission {
             case REQUEST_ENABLE_BT:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission Granted
-                    Log.d(TAG_DEBUG,"PERMESSO DATO!!!");
+                    Log.d(TAG_DEBUG,"PERMESSO DATO per i permesse!!!");
                 } else {
                     // Permission Denied
                     Toast.makeText(activity, "PERMISSION_GRANTED Denied", Toast.LENGTH_SHORT)
@@ -74,9 +77,8 @@ public class BluethootPermission {
                 }
                 break;
             default:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    activity.onRequestPermissionsResult(requestCode, permissions, grantResults);
-                }
+                activity.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         }
     }
 
@@ -93,14 +95,15 @@ public class BluethootPermission {
         }
     }
     //return from  startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT) in enableBLT()
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if (requestCode == REQUEST_ENABLE_BT) {
             // Make sure the request was successful
             if (resultCode == activity.RESULT_OK) {
                 // The user open the bluethoot.
                 // The Intent's data Uri identifies which contact was selected.
-                Log.d(TAG_DEBUG,"L utente ha dato il permesso");
+                Log.d(TAG_DEBUG,"L utente ha dato il permesso per ACCENDERE il BLT");
+                activity.startService(new Intent(activity.getBaseContext(), BeaconService.class));
                 // Do something with the contact here (bigger example below)
             }else{ //if(requestCode == RESULT_CANCELED){
                 Log.d(TAG_DEBUG,"L utente non ha dato il permesso");
@@ -117,4 +120,19 @@ public class BluethootPermission {
                 .create()
                 .show();
     }
+
+
+    /**
+     * NOTEEEE!!!
+     * AGGIUNGERE I DUE METODI NELL'ACTIVITY CHE USA QUESTA CLASSE, PERCHé SONO METODI DELLA CLASSE
+     * ACTIVITY E NON SI RIESCE A OVERRIDE FUORI DALLA CLASSE ACTIVITY
+     * @Override
+        public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+            bp.onRequestPermissionsResult(requestCode,permissions,grantResults);
+        }
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            bp.onActivityResult(requestCode,resultCode,data);
+        }
+     **/
 }

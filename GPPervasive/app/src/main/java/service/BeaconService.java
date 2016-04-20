@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public class BeaconService extends Service {
     private BeaconManager beaconManager;
-    private final String TAG_DEBUG = "BEACON SERVICE";
+    private final String TAG_DEBUG = "BEACONSERVICE";
     private Context context;
     private static int created=0;
     @Override
