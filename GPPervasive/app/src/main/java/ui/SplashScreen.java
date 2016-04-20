@@ -21,6 +21,7 @@ public class SplashScreen extends AppCompatActivity {
         setContentView(R.layout.activity_splash_screem);
         //startService(new Intent(getBaseContext(), BeaconService.class));
         bp = new BluethootPermission(SplashScreen.this);
+        stopService(new Intent(getBaseContext(), BeaconService.class));
     }
 
     @Override

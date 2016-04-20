@@ -103,7 +103,7 @@ public class BluethootPermission {
                 // The user open the bluethoot.
                 // The Intent's data Uri identifies which contact was selected.
                 Log.d(TAG_DEBUG,"L utente ha dato il permesso per ACCENDERE il BLT");
-                activity.startService(new Intent(activity.getBaseContext(), BeaconService.class));
+
                 // Do something with the contact here (bigger example below)
             }else{ //if(requestCode == RESULT_CANCELED){
                 Log.d(TAG_DEBUG,"L utente non ha dato il permesso");

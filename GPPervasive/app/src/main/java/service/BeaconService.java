@@ -34,6 +34,7 @@ public class BeaconService extends Service {
         Toast.makeText(this, "onCreate() Service Started", Toast.LENGTH_LONG).show();
         if(created == 0){
             initializedBeaconManager();
+            Toast.makeText(this, "created==0", Toast.LENGTH_SHORT).show();
             created++;
         }else{
             Log.d(TAG_DEBUG, "created!=0");
