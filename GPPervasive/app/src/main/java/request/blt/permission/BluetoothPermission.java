@@ -18,13 +18,14 @@ import service.BeaconService;
 /**
  * Created by Andrea on 19/04/2016.
  */
-public class BluethootPermission {
-    final private String TAG_DEBUG ="BLT_PERMISSIONNN";
+public class BluetoothPermission {
+    final private String TAG_DEBUG ="BLT_PERMISSION";
     final private int REQUEST_ENABLE_BT = 125;
    private AppCompatActivity activity;
 
-    public BluethootPermission(AppCompatActivity a){
-      activity = a;    }
+    public BluetoothPermission(AppCompatActivity a){
+      activity = a;
+    }
 
     //this function it must put in onResume method, it
     //checks if the app has the BLT's permission, and in the end
@@ -72,8 +73,16 @@ public class BluethootPermission {
                     Log.d(TAG_DEBUG,"PERMESSO DATO per i permesse!!!");
                 } else {
                     // Permission Denied
-                    Toast.makeText(activity, "PERMISSION_GRANTED Denied", Toast.LENGTH_SHORT)
-                            .show();
+                    Log.d(TAG_DEBUG, "PERMESSO NEGATO per i permesse!!!");
+                    //Toast.makeText(activity, "PERMISSION_GRANTED Denied", Toast.LENGTH_SHORT).show();
+                    this.showMessageOK("Permissions denied: the app will be closed.",
+                            new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    activity.finish();
+                                }
+                            }
+                    );
                 }
                 break;
             default:
@@ -117,6 +126,15 @@ public class BluethootPermission {
                 .setMessage(message)
                .setPositiveButton("OK", okListener)
                 .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+
+    private void showMessageOK(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(activity)
+                //.setView()
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
                 .create()
                 .show();
     }

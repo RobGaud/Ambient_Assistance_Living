@@ -8,7 +8,7 @@ import android.widget.TextView;
 import com.pervasivesystems.compasstest.R;
 
 import compass.CompassOld;
-import request.blt.permission.BluethootPermission;
+import request.blt.permission.BluetoothPermission;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity{
     private ImageView image;
     private TextView tvHeading;
     private CompassOld cn;
-    BluethootPermission bp;
+    BluetoothPermission bp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity{
         cn = new CompassOld(this,image,tvHeading);
         cn.setDirection(0);
 
-        bp = new BluethootPermission(MainActivity.this);
+        bp = new BluetoothPermission(MainActivity.this);
     }
 
     @Override
