@@ -18,7 +18,9 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash_screem);
+        //This line is commented because we want to use a style for this splashscreen
+        // setContentView(R.layout.activity_splash_screem);
+
         //startService(new Intent(getBaseContext(), BeaconService.class));
         bp = new BluethootPermission(SplashScreen.this);
         stopService(new Intent(getBaseContext(), BeaconService.class));
