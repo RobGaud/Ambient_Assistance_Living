@@ -54,10 +54,11 @@ public class CompassOld  implements SensorEventListener  {
 
         // get the angle around the z-axis rotated
         float degree = Math.round(event.values[0]);
+        /*
         if(tv!=null)
             tv.setText("Heading: " + Float.toString(degree) + " degrees"+
                         "\ncurrentDegree: "+ Float.toString(currentDegree)+ " degrees");
-
+        */
         // create a rotation animation (reverse turn degree degrees)
         RotateAnimation ra = new RotateAnimation(
                 currentDegree,
@@ -87,7 +88,7 @@ public class CompassOld  implements SensorEventListener  {
             }else{
                 msg = "sei giusto";
             }
-            tv.append("\ndirection: "+direction+"\nmsg: "+msg);
+            //tv.append("\ndirection: "+direction+"\nmsg: "+msg);
         }
 
         // Start the animation

@@ -19,7 +19,11 @@ public class GraphMap {
 
     public void setCurrentPosition(Node currentPosition) { this.currentPosition = currentPosition;    }
 
-    public Node getCurrentPosition() { return currentPosition;  }
+    public Node getCurrentPosition(){ return currentPosition;  }
+
+    public Node getNodeFromBeacon(Region currentRegion){
+        return this.nodes.get(currentRegion);
+    }
 
     //it provides one inizialization at compilation time of one map
     public void inizializateMaps(){

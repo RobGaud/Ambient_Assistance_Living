@@ -16,8 +16,6 @@
     <!-- Required to add SERVICE at the boot time -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -54,7 +52,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name="ui.BeaconSearch"></activity>
+        <activity android:name="ui.BeaconSearch" />
+        <activity android:name="ui.Navigation"></activity>
     </application>
 
 </manifest>
