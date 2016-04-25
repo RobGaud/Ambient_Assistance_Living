@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -83,6 +84,12 @@ public class Navigation extends AppCompatActivity {
                         Interagisci col Compass per sapere se di fronte ha qualcosa
                     */
                     compass.setCurrentNode(currentNode);
+
+                    //Update the GUI
+                    positionText.setText(currentNode.getAudio());
+                    // TODO come faccio partire l'audio associato?
+
+
                 }
             }
         });
@@ -121,8 +128,19 @@ public class Navigation extends AppCompatActivity {
     */
 
 
-
-    public void changeStatus(Node possibleDirection){
+    // Metodo usato per informare l'utente della nuova direzione
+    public void changeStatus(final Edge possibleDirection){
         //TODO
-    }
+        // Cambia testo bottone
+        // Cambia listener del bottone
+        navigationButton.setText("In this direction you can reach "+possibleDirection.getNodeTo().getAudio());
+        navigationButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // TODO
+                        compass.setDirection(possibleDirection.getDirection());
+                    }
+                }
+        );    }
 }

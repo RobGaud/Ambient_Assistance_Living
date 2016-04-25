@@ -9,7 +9,7 @@ import java.util.LinkedList;
 public class Node {
     private LinkedList<Edge> edges;
     private String audio;
-    public static enum CATEGORY {ROOM,OUTDOOR, STAIRS};
+    public enum CATEGORY {ROOM,OUTDOOR, STAIRS}
     private CATEGORY category;
     private int steps;
 
@@ -29,9 +29,11 @@ public class Node {
         setCategory(c);
     }
     public String getAudio() {  return audio; }
+
     public LinkedList<Edge> getEdges() { return edges; }
 
     public void setSteps(int steps) {this.steps = steps; }
+
     public int getSteps() { return steps; }
 
     public void setCategory(CATEGORY category) {this.category = category;  }

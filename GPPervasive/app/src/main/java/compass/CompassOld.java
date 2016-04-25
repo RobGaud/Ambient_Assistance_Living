@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Handler;
 import android.renderscript.Float2;
 import android.util.Log;
 import android.view.View;
@@ -38,16 +39,14 @@ public class CompassOld  implements SensorEventListener  {
     private float range;
     private Node currentNode;
 
-    public float getCurrentDegree() {
-        return currentDegree;
-    }
-
-    public float getRange() {
-        return range;
-    }
-
     // record the compass picture angle turned
     private float currentDegree = 0f;
+    private static float degree;
+    private static final int TIMEOUT = 3000; // Expressed in milliseconds
+
+    // To do navigation periodically
+    private Handler handler;
+    private Runnable runnableCode;
 
     //initialize the class
     public CompassOld(Context context, Navigation n, ImageView i, TextView tv){
@@ -57,6 +56,16 @@ public class CompassOld  implements SensorEventListener  {
         this.tv = tv;
         iv = i;
     }
+
+    public float getCurrentDegree() {
+        return currentDegree;
+    }
+
+    public float getRange() {
+        return range;
+    }
+
+
 
     //put in onResume
     public void registerListener(){
@@ -76,7 +85,7 @@ public class CompassOld  implements SensorEventListener  {
     public void onSensorChanged(SensorEvent event) {
 
         // get the angle around the z-axis rotated
-        float degree = Math.round(event.values[0]);
+        degree = Math.round(event.values[0]);
         /*
         if(tv!=null)
             tv.setText("Heading: " + Float.toString(degree) + " degrees"+
@@ -100,8 +109,12 @@ public class CompassOld  implements SensorEventListener  {
         //a certain range
 
         // Check user's direction
-        float difference = degree-direction;
-        this.adjustDirection(difference);
+        //float difference = degree-direction;
+        /*
+        if(follow) {
+            this.adjustDirection(degree, direction);
+        }
+        */
 
         // Start the animation
         iv.startAnimation(ra);
@@ -121,6 +134,24 @@ public class CompassOld  implements SensorEventListener  {
     public void setDirection(float degree){
         follow = true;
         direction = degree;
+        handler = new Handler();
+
+        // Define the code block to be executed
+        runnableCode = new Runnable() {
+            @Override
+            public void run() {
+                // Do something here on the main thread
+                Log.d("Handlers", "Called on main thread");
+                if(follow) {
+                    adjustDirection(CompassOld.degree, direction);
+                }
+
+                // Repeat this the same runnable code block again another 2 seconds
+                handler.postDelayed(runnableCode, TIMEOUT);
+            }
+        };
+        // Start the initial runnable task by posting through the handler
+        handler.post(runnableCode);
     }
 
     private void unsetDirection(){follow=false;}
@@ -139,25 +170,58 @@ public class CompassOld  implements SensorEventListener  {
 
             if (currentDegree >= direction - range && currentDegree <= direction + range) {
                 //TODO interagisci con la Navigation
-                Node possibleDestination = e.getNodeTo();
-                activity.changeStatus(possibleDestination);
+                activity.changeStatus(e);
             }
         }
     }
 
     // Metodo per correggere la direzione dell'utente (in navigazione)
-    public void adjustDirection(float difference){
-        //TODO metti la modifica che avevi fatto.
-        if(follow){
-            String msg;
-            if(difference>0){
-                msg = "sei a dx della direction";
-            }else if(difference<0){
-                msg = "sei a sx della direction";
-            }else{
-                msg = "sei giusto";
-            }
-            //tv.append("\ndirection: "+direction+"\nmsg: "+msg);
+    // Nota: per informare l'utente potremmo usare il metodo changeStatus di Navigation
+    public void adjustDirection(float degree, float direction) {
+        if( checkIfInRange(degree, direction-range, direction+range) ){
+            //TODO informa l'utente che è nella giusta direzione
+        }
+        else if( checkIfInRange(degree, (direction+180)%360-range, (direction+180)%360+range) ){
+            //TODO informa l'utente che è nella direzione opposta
+        }
+        else if( checkIfInRange(degree, (direction+180)%360+range, direction-range)){
+            //TODO informa l'utente che è a sinistra della direzione giusta
+        }
+        else if( checkIfInRange(degree, direction+range, (direction+180)%360+range) ){
+            //TODO informa l'utente che è a destra della direzione giusta
+        }
+        else{
+            Log.d(TAG_DEBUG, "adjustDirection: caso non previsto. degree="+degree+", direction="+direction);
+        }
+
+
+    }
+
+    // Metodo che restituisce true se orientation è compreso tra leftBound e rightBound,
+    // Tenendo conto del fatto che gli angoli sono in mod 360.
+    private boolean checkIfInRange(float orientation, float leftBound, float rightBound){
+        if(leftBound <= 0) { // Esempio: direction=10
+            if( (orientation-360 >= leftBound) || (orientation<=rightBound) )
+                return true;
+            else
+                return false;
+        }
+        else if( rightBound%360 < leftBound ){ //Esempio: direction=350
+            if( (orientation>=leftBound && orientation <= 0) || (orientation>=0 && orientation<rightBound) )
+                return true;
+            else
+                return false;
+        }
+        else if(leftBound*rightBound > 0 && leftBound < rightBound){ // Caso generale
+            if(orientation>=leftBound && orientation <= rightBound)
+                return true;
+            else
+                return false;
+        }
+        else{
+            Log.d(TAG_DEBUG, "checkIfInRange: caso non previsto." +
+                             "leftBound="+leftBound+", rightBound="+rightBound);
+            return false;
         }
     }
 
