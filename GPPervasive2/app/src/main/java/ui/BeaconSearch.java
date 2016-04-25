@@ -23,6 +23,7 @@ import service.BeaconService;
 public class BeaconSearch extends AppCompatActivity {
 
     BluetoothPermission bp;
+    private final String TAG_DEBUG_APP = "BLIND_";
     private String TAG_DEBUG = "BEACONSEARCH";
     private BeaconManager beaconManager;
     private static final String UUID_String = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
@@ -32,7 +33,7 @@ public class BeaconSearch extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG_DEBUG,"onCreate()");
+        Log.d(TAG_DEBUG_APP+TAG_DEBUG,"onCreate()");
         setContentView(R.layout.activity_beacon_search);
 
         bp = new BluetoothPermission(BeaconSearch.this);
@@ -43,7 +44,7 @@ public class BeaconSearch extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        Log.d(TAG_DEBUG,"onResume()");
+        Log.d(TAG_DEBUG_APP+TAG_DEBUG,"onResume()");
         bp.onResumeEnableBluetoothPermission();
         //stoppo il servizio
         stopService(new Intent(getBaseContext(), BeaconService.class));
@@ -53,7 +54,7 @@ public class BeaconSearch extends AppCompatActivity {
     @Override
     protected void onPause(){
         super.onPause();
-        Log.d(TAG_DEBUG,"onPause()");
+        Log.d(TAG_DEBUG_APP+TAG_DEBUG,"onPause()");
         //faccio partire il servizio, se ho già ottenuto i permessi, facciamo un check:
         if (bp.hasPermission() == PackageManager.PERMISSION_GRANTED) {
             //se il servizio è attivo bisogna stoppare il monitoring
@@ -66,7 +67,7 @@ public class BeaconSearch extends AppCompatActivity {
     }
     private void initializedBeaconManager() {
         if (bp.hasPermission() == PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG_DEBUG, "initializedBeaconManager() ");
+            Log.d(TAG_DEBUG_APP+TAG_DEBUG, "initializedBeaconManager() ");
             //attivo il monitoring
             beaconManager = new BeaconManager(this);
 
@@ -80,12 +81,12 @@ public class BeaconSearch extends AppCompatActivity {
             beaconManager.setMonitoringListener(new BeaconManager.MonitoringListener() {
                 @Override
                 public void onEnteredRegion(Region region, List<Beacon> list) {
-                    Log.d(TAG_DEBUG, "onEnteredRegion"+region.toString());
+                    Log.d(TAG_DEBUG_APP+TAG_DEBUG, "onEnteredRegion"+region.getProximityUUID());
                     // Toast.makeText(context, "onEnteredRegion", Toast.LENGTH_SHORT).show();
 
                     //TODO chiama navigaziotion, passanto la region con cui sei entrato. Stringa UUID
                     Intent Navigation = new Intent(appCompatActivity, Navigation2.class);
-                    Navigation.putExtra("Region", region.getProximityUUID());
+                    Navigation.putExtra("Region", region.getProximityUUID()+"");
                     Toast.makeText(appCompatActivity, "Abbiamo trovato un beacon, ti manderemo in automatico alla " +
                             "schermata di navigazione", Toast.LENGTH_LONG).show();
                     need_service = false;
@@ -95,13 +96,13 @@ public class BeaconSearch extends AppCompatActivity {
                 @Override
                 public void onExitedRegion(Region region) {
                     // could add an "exit" notification too if you want (-:
-                    Log.d(TAG_DEBUG, "onExitedRegion");
+                    Log.d(TAG_DEBUG_APP+TAG_DEBUG, "onExitedRegion");
 
                     //TODO mmm, non so, forse neanche ci serve
                 }
             });
         }else{
-            Log.d(TAG_DEBUG,"NON ABBIAMO I PERMESSI PER IL BLT, DO ANNAMO?");
+            Log.d(TAG_DEBUG_APP+TAG_DEBUG,"NON ABBIAMO I PERMESSI PER IL BLT, DO ANNAMO?");
         }
 
     }
