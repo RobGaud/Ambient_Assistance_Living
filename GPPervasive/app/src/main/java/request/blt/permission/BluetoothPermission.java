@@ -31,8 +31,7 @@ public class BluetoothPermission {
     //checks if the app has the BLT's permission, and in the end
     //checks if the BLT is open with the call enableBLT()
     public void onResumeEnableBluetoothPermission(){
-        int hasWriteContactsPermission = ContextCompat.checkSelfPermission(activity,
-                Manifest.permission.ACCESS_COARSE_LOCATION);
+        int hasWriteContactsPermission = hasPermission();
         if (hasWriteContactsPermission != PackageManager.PERMISSION_GRANTED) {
             //shouldShowRequestPermissionRationale() = If this function is called on pre-M, it will always return false.
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
@@ -139,7 +138,10 @@ public class BluetoothPermission {
                 .show();
     }
 
-
+    public int hasPermission(){
+        return ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.ACCESS_COARSE_LOCATION);
+    }
     /**
      * NOTEEEE!!!
      * AGGIUNGERE I DUE METODI NELL'ACTIVITY CHE USA QUESTA CLASSE, PERCHé SONO METODI DELLA CLASSE
