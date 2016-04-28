@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
@@ -50,6 +51,7 @@ public class Navigation extends AppCompatActivity {
     private static LinkedHashMap<Region, Node> DIAGList;
     private static GraphMap graph;
 
+    private AppCompatActivity appCompatActivity;
     private CompassOld compass ;
 
     @Override
@@ -69,6 +71,8 @@ public class Navigation extends AppCompatActivity {
         currentDirection = null;
         bp = new BluetoothPermission(this);
         beaconManager = new BeaconManager(this);
+
+        appCompatActivity = this;
 
         UUID = getIntent().getExtras().getString("Region");
         if(UUID != null){
@@ -165,21 +169,46 @@ public class Navigation extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             // TODO avvisare che non c'è nessuna direction
+                            Toast.makeText(appCompatActivity,
+                                    "Turn around to find new directions.",
+                                    Toast.LENGTH_LONG).show();
                         }
                     }
             );
         }else {
-            navigationButton.setText("In this direction you can reach " + possibleDirection.getNodeTo().getAudio());
-            navigationButton.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // TODO
-                            compass.setDirection(possibleDirection.getDirection());
-                        }
-                    }
-            );
+            setButtonStartNavigation(possibleDirection.getNodeTo().getAudio(), possibleDirection.getDirection());
         }
+    }
+
+    private void setButtonStartNavigation(final String directionName, final float directionDegrees){
+        navigationButton.setText("In this direction you can reach " + directionName+".");
+        navigationButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(appCompatActivity,
+                                "Navigation started", Toast.LENGTH_LONG).show();
+                        compass.unsetDirection();
+                        compass.setDirection(directionDegrees);
+                        setButtonStopNavigation(directionName);
+                        // TODO modificare testo e listener per disattivare la navigazione
+                    }
+                }
+        );
+    }
+
+    private void setButtonStopNavigation(String directionName){
+        navigationButton.setText("You are walking towards "+directionName+". Click here to stop the navigation.");
+        navigationButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(appCompatActivity,
+                                "Navigation ended.", Toast.LENGTH_LONG).show();
+                        compass.unsetDirection();
+                    }
+                }
+        );
     }
 
     private void initializeRanging(){
@@ -203,17 +232,24 @@ public class Navigation extends AppCompatActivity {
                         currentNode = graph.getNodeFromBeacon(detectedBeacon);
                         if(currentNode==null) {
                             Log.d(TAG_DEBUG, "ERROR: DETECTED BEACON IS NOT ASSOCIATED TO ANY NODE");
+                            //TODO return?
                         }
                         /*  TODO
                             Interagisci col Compass per sapere se di fronte ha qualcosa
                         */
-                        compass.setCurrentNode(currentNode);
+                        if( compass.getCurrentNode() != null && !currentNode.equals(compass.getCurrentNode())){
+                            // Se stava camminando verso una direzione, e l'ha raggiunta,
+                            // Dobbiamo fermare la navigazione.
+                            compass.unsetDirection();
+                        }
+                        else
+                            compass.setCurrentNode(currentNode);
 
                         //Update the GUI
                         if(currentNode!=null)
-                         positionText.setText(currentNode.getAudio()+"");
+                         positionText.setText("You are in "+currentNode.getAudio());
                         else
-                            positionText.setText("ccccccc");
+                            positionText.setText("No beacon detected");
 
                         // TODO come faccio partire l'audio associato?
                     }

@@ -15,6 +15,7 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.content.Context;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ListIterator;
 
@@ -37,13 +38,13 @@ public class CompassOld  implements SensorEventListener  {
 
     private boolean follow=false;
     private float direction;
-    private float range=20.0f;
+    private float range=10.0f;
     private Node currentNode;
 
     // record the compass picture angle turned
     private float currentDegree = 0f;
     private static float degree;
-    private static final int TIMEOUT = 3000; // Expressed in milliseconds
+    private static final int TIMEOUT = 4000; // Expressed in milliseconds
 
     // To do navigation periodically
     private Handler handler;
@@ -79,7 +80,7 @@ public class CompassOld  implements SensorEventListener  {
     public void unregisterListener(){
         // to stop the listener and save battery
         mSensorManager.unregisterListener(this);
-
+        unsetDirection();
     }
 
     @Override
@@ -121,7 +122,8 @@ public class CompassOld  implements SensorEventListener  {
         currentDegree = -degree;
 
         //Check whether the user has something in front of him
-        if( currentNode != null ){
+        Log.d("provaaa","follow: "+follow);
+        if( currentNode != null && !follow){
             this.checkDirection();
         }
     }
@@ -154,9 +156,15 @@ public class CompassOld  implements SensorEventListener  {
         handler.post(runnableCode);
     }
 
-    private void unsetDirection(){follow=false;}
+    public void unsetDirection(){
+        follow=false;
+        if( handler != null )
+            handler.removeCallbacks(runnableCode);
+    }
 
     public void setCurrentNode(Node n){ this.currentNode = n; }
+
+    public Node getCurrentNode(){ return this.currentNode; }
 
     // Metodo per vedere cosa ha di fronte (quando non siamo in navigazione)
     public void checkDirection(){
@@ -169,11 +177,9 @@ public class CompassOld  implements SensorEventListener  {
             float range = this.range;
             Log.d(TAG_DEBUG, "checkDirection: degree= "+degree+" direction: "+direction);
 
-            //TODO usa metodo creato apposta
             if( checkIfInRange(degree, direction - range, direction + range) ){
-                //TODO interagisci con la Navigation
-                found = true;
                 Log.d(TAG_DEBUG, "checkDirection: nodeTo="+e.getNodeTo().getAudio()+"\n");
+                found = true;
                 activity.changeStatus(e);
             }
             Log.d(TAG_DEBUG, "---------------------");
@@ -186,31 +192,35 @@ public class CompassOld  implements SensorEventListener  {
 
     // Metodo per correggere la direzione dell'utente (in navigazione)
     // Nota: per informare l'utente potremmo usare il metodo changeStatus di Navigation
-    public void adjustDirection(float degree, float direction) {
+    public void adjustDirection(float degree, float direction){
+
         if( checkIfInRange(degree, direction-range, direction+range) ){
-            //TODO informa l'utente che è nella giusta direzione
             Log.d(TAG_DEBUG, "AdjustDirection: informa l'utente che è nella giusta direzione");
+            Toast.makeText(activity.getApplicationContext(),
+                    "Keep walking on this direction to reach "+currentNode.getAudio(),
+                    Toast.LENGTH_SHORT).show();
+
         }
         else if( checkIfInRange(degree, (direction+180)%360-range, (direction+180)%360+range) ){
-            //TODO informa l'utente che è nella direzione opposta
             Log.d(TAG_DEBUG, "AdjustDirection: informa l'utente che è nella direzione opposta");
+            Toast.makeText(activity.getApplicationContext(),
+                    "You are walking in the opposite direction.", Toast.LENGTH_SHORT).show();
 
         }
         else if( checkIfInRange(degree, (direction+180)%360+range, direction-range)){
-            //TODO informa l'utente che è a sinistra della direzione giusta
             Log.d(TAG_DEBUG, "AdjustDirection: informa l'utente che è a sinistra della giusta direzione");
+            Toast.makeText(activity.getApplicationContext(),
+                    "Turn right to reach "+currentNode.getAudio(), Toast.LENGTH_SHORT).show();
 
         }
         else if( checkIfInRange(degree, direction+range, (direction+180)%360+range) ){
-            //TODO informa l'utente che è a destra della direzione giusta
             Log.d(TAG_DEBUG, "AdjustDirection: informa l'utente che è a destra della giusta direzione");
-
+            Toast.makeText(activity.getApplicationContext(),
+                    "Turn left to reach "+currentNode.getAudio(), Toast.LENGTH_SHORT).show();
         }
         else{
             Log.d(TAG_DEBUG, "adjustDirection: caso non previsto. degree="+degree+", direction="+direction);
         }
-
-
     }
 
     // Metodo che restituisce true se orientation è compreso tra leftBound e rightBound,
