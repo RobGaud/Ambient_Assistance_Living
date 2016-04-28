@@ -160,21 +160,28 @@ public class CompassOld  implements SensorEventListener  {
 
     // Metodo per vedere cosa ha di fronte (quando non siamo in navigazione)
     public void checkDirection(){
+        boolean found=false;
         ListIterator<Edge> directions = currentNode.getEdges().listIterator();
         while( directions.hasNext() ) {
-
             Edge e = directions.next();
             float direction = e.getDirection();
             float currentDegree = this.currentDegree;
             float range = this.range;
+            Log.d(TAG_DEBUG, "checkDirection: degree= "+degree+" direction: "+direction);
 
             //TODO usa metodo creato apposta
             if( checkIfInRange(degree, direction - range, direction + range) ){
                 //TODO interagisci con la Navigation
-                //Log.d(TAG_DEBUG, "checkDirection: chiamo ChangeStatus()");
+                found = true;
+                Log.d(TAG_DEBUG, "checkDirection: nodeTo="+e.getNodeTo().getAudio()+"\n");
                 activity.changeStatus(e);
             }
+            Log.d(TAG_DEBUG, "---------------------");
         }
+        if( !found){
+            activity.changeStatus(null);
+        }
+
     }
 
     // Metodo per correggere la direzione dell'utente (in navigazione)
@@ -217,7 +224,7 @@ public class CompassOld  implements SensorEventListener  {
                 return false;
         }
         else if( rightBound%360 < leftBound ){ //Esempio: direction=350
-            if( (orientation>=leftBound && orientation <= 0) || (orientation>=0 && orientation<rightBound) )
+            if( (orientation>=leftBound && orientation < 360) || (orientation>=0 && orientation<rightBound%360) )
                 return true;
             else
                 return false;

@@ -153,22 +153,34 @@ public class Navigation extends AppCompatActivity {
         }
     }
     */
-
     // Metodo usato per informare l'utente della nuova direzione
     public void changeStatus(final Edge possibleDirection){
         //TODO
         // Cambia testo bottone
         // Cambia listener del bottone
-        navigationButton.setText("In this direction you can reach "+possibleDirection.getNodeTo().getAudio());
-        navigationButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // TODO
-                        compass.setDirection(possibleDirection.getDirection());
+        if(possibleDirection==null) {
+            navigationButton.setText("In this direction you cannot reach anything ");
+            navigationButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // TODO avvisare che non c'è nessuna direction
+                        }
                     }
-                }
-        );    }
+            );
+        }else {
+            navigationButton.setText("In this direction you can reach " + possibleDirection.getNodeTo().getAudio());
+            navigationButton.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // TODO
+                            compass.setDirection(possibleDirection.getDirection());
+                        }
+                    }
+            );
+        }
+    }
 
     private void initializeRanging(){
         if(bp.hasPermission()== PackageManager.PERMISSION_GRANTED) {
@@ -187,6 +199,7 @@ public class Navigation extends AppCompatActivity {
                                 nearestBeacon.getProximityUUID(),
                                 nearestBeacon.getMajor(),
                                 nearestBeacon.getMinor());
+                        Log.d(TAG_DEBUG," "+detectedBeacon.toString());
                         currentNode = graph.getNodeFromBeacon(detectedBeacon);
                         if(currentNode==null) {
                             Log.d(TAG_DEBUG, "ERROR: DETECTED BEACON IS NOT ASSOCIATED TO ANY NODE");
@@ -197,7 +210,11 @@ public class Navigation extends AppCompatActivity {
                         compass.setCurrentNode(currentNode);
 
                         //Update the GUI
-                        positionText.setText(currentNode.getAudio());
+                        if(currentNode!=null)
+                         positionText.setText(currentNode.getAudio()+"");
+                        else
+                            positionText.setText("ccccccc");
+
                         // TODO come faccio partire l'audio associato?
                     }
                 }
