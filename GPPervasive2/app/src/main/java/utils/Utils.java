@@ -81,6 +81,7 @@ public class Utils {
                 (NotificationManager) from_activity.getSystemService(from_activity.NOTIFICATION_SERVICE);
 
         notificationManager.notify(id, n);
+
         return n;
     }
     public static void deleteNotification(int id,Service activity){

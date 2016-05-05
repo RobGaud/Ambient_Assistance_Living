@@ -2,6 +2,7 @@ package audio;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -12,7 +13,7 @@ public class ManageAudio implements MediaPlayer.OnCompletionListener{
     private int currentTrack;
     private MediaPlayer mediaPlayer = null;
     private Context c;
-
+    private String TAG_DEBUG = "BLIND_MANAGE_AUDIO";
     public ManageAudio(Context context){
         currentTrack=0;
         c = context;
@@ -22,14 +23,15 @@ public class ManageAudio implements MediaPlayer.OnCompletionListener{
         this.tracks = traks;
         c = context;
         mediaPlayer = MediaPlayer.create(c.getApplicationContext(), tracks[currentTrack]);
-        mediaPlayer.setOnCompletionListener(this);
-        mediaPlayer.start();
+        //mediaPlayer.setOnCompletionListener(this);
+       // mediaPlayer.start();
 
     }
 
     public void play(){
         if(mediaPlayer!=null) {
-            Toast.makeText(c.getApplicationContext(),"play", Toast.LENGTH_LONG).show();
+           // Toast.makeText(c.getApplicationContext(),"play", Toast.LENGTH_LONG).show();
+            Log.d(TAG_DEBUG,"play");
             mediaPlayer.start();
         }
     }

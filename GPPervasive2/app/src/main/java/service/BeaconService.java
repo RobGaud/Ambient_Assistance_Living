@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 import ui.BeaconSearch;
-import ui.Navigation2;
+import ui.Navigation;
 
 
 public class BeaconService extends Service {
@@ -66,6 +66,7 @@ public class BeaconService extends Service {
         super.onDestroy();
         n = null;
         n1 = null;
+
         created = 0;
         //tolgo la notifica di enter
         utils.Utils.deleteNotification(id_not,service);
@@ -100,7 +101,7 @@ public class BeaconService extends Service {
                 if(n == null){
                     Log.d(TAG_DEBUG_APP+TAG_DEBUG, "n == null");
                     utils.Utils.deleteNotification(id_not1,service);
-                    n = utils.Utils.Notification(id_not,service, Navigation2.class,
+                    n = utils.Utils.Notification(id_not,service, Navigation.class,
                             "Beacon Service", "sei dentro alla regione: "+UUID_String,UUID_String);
                 }else{
                     Log.d(TAG_DEBUG, "n != null,onEnteredRegion(), c'è già la notifica");

@@ -41,7 +41,6 @@ public class BluetoothPermission {
                         REQUEST_ENABLE_BT);*/
                 enableBLT();
                 Log.d(TAG_DEBUG," Build.VERSION.SDK_INT < Build.VERSION_CODES.M");
-
             }else{
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(activity,Manifest.permission.ACCESS_COARSE_LOCATION)) {
                     showMessageOKCancel("You need to allow access for BLT scanning on Android 6.0 and above.",
@@ -139,8 +138,17 @@ public class BluetoothPermission {
     }
 
     public int hasPermission(){
-        return ContextCompat.checkSelfPermission(activity,
-                Manifest.permission.ACCESS_COARSE_LOCATION);
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (!mBluetoothAdapter.isEnabled()) {
+                return PackageManager.PERMISSION_DENIED;
+            }else {
+                return PackageManager.PERMISSION_GRANTED;
+            }
+        }else {
+            return ContextCompat.checkSelfPermission(activity,
+                    Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
     }
     /**
      * NOTEEEE!!!

@@ -1,12 +1,23 @@
 package ui;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
+import android.nfc.Tag;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.estimote.sdk.Beacon;
@@ -20,7 +31,7 @@ import java.util.UUID;
 import request.blt.permission.BluetoothPermission;
 import service.BeaconService;
 
-public class BeaconSearch extends AppCompatActivity {
+public class BeaconSearch extends AppCompatActivity{
 
     BluetoothPermission bp;
     private final String TAG_DEBUG_APP = "BLIND_";
@@ -30,15 +41,26 @@ public class BeaconSearch extends AppCompatActivity {
     private Region  region =  new Region("monitored region",UUID.fromString(UUID_String), null, null);
     private AppCompatActivity appCompatActivity;
     private boolean need_service = true;
+
+    // Animation stuff
+    RotateAnimation animFadein;
+    ImageView rangeImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG_DEBUG_APP+TAG_DEBUG,"onCreate()");
         setContentView(R.layout.activity_beacon_search);
 
+        ImageView logo = (ImageView)findViewById(R.id.imageView);
+        Animation rotateAnimation = AnimationUtils.loadAnimation(this.getApplicationContext(),
+                R.anim.rotate);
+        logo.startAnimation(rotateAnimation);
+        Log.d(TAG_DEBUG_APP+TAG_DEBUG, "animation started");
+
         bp = new BluetoothPermission(BeaconSearch.this);
-        stopService(new Intent(getBaseContext(), BeaconService.class));
         appCompatActivity = this;
+
     }
 
     @Override
@@ -85,7 +107,7 @@ public class BeaconSearch extends AppCompatActivity {
                     // Toast.makeText(context, "onEnteredRegion", Toast.LENGTH_SHORT).show();
 
                     //TODO chiama navigaziotion, passanto la region con cui sei entrato. Stringa UUID
-                    Intent Navigation = new Intent(appCompatActivity, Navigation2.class);
+                    Intent Navigation = new Intent(appCompatActivity, Navigation.class);
                     Navigation.putExtra("Region", region.getProximityUUID()+"");
                     Toast.makeText(appCompatActivity, "Abbiamo trovato un beacon, ti manderemo in automatico alla " +
                             "schermata di navigazione", Toast.LENGTH_LONG).show();
@@ -117,6 +139,24 @@ public class BeaconSearch extends AppCompatActivity {
         bp.onActivityResult(requestCode, resultCode, data);
     }
 
+    /* AnimationListener methods
+    @Override
+    public void onAnimationEnd(Animation animation) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public void onAnimationRepeat(Animation animation) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onAnimationStart(Animation animation) {
+        // TODO Auto-generated method stub
+
+    }
+    */
     //TODO Logica del monitoring
     //TODO Chiamata/chiusura del servizio in background
 
