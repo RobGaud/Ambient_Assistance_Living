@@ -31,6 +31,7 @@ import compass.CompassOld;
 import graph.Edge;
 import graph.GraphMap;
 import graph.Node;
+import map.persistence.DBHelper;
 import request.blt.permission.BluetoothPermission;
 import service.BeaconService;
 
@@ -53,7 +54,8 @@ public class Navigation extends AppCompatActivity {
     private String lastNode="";
     private Node currentDirection;
     private boolean onNavigation;
-    private static LinkedHashMap<Region, Node> DIAGList;
+    private DBHelper dbHelper;
+    private static LinkedHashMap<Region, Node> buildingMap;
     private static GraphMap graph;
 
     private AppCompatActivity appCompatActivity;
@@ -80,6 +82,8 @@ public class Navigation extends AppCompatActivity {
         bp = new BluetoothPermission(this);
         beaconManager = new BeaconManager(this);
 
+        dbHelper = new DBHelper(getApplicationContext());
+
         appCompatActivity = this;
 
         UUID = getIntent().getExtras().getString("Region");
@@ -88,7 +92,7 @@ public class Navigation extends AppCompatActivity {
             region = new Region("DIAG department", java.util.UUID.fromString(UUID), null, null);
         }else{
             Log.d(TAG_DEBUG,"Errore, parametro non passato");
-            //TODO porco zio esci! ESCI!!!
+            //TODO ESCI
         }
 
         tracks[0] = R.raw.tethys;
@@ -244,11 +248,10 @@ public class Navigation extends AppCompatActivity {
 
     private void initializeRanging(){
         if(bp.hasPermission()== PackageManager.PERMISSION_GRANTED) {
-            DIAGList = new LinkedHashMap();
-            final GraphMap graph = new GraphMap(DIAGList);
+            //final GraphMap graph = new GraphMap(DIAGList);
             // In generale, dovremmo scaricare la mappa dal server;
             // Qui, sappiamo già di che edificio parliamo (il DIAG).
-            graph.inizializateMaps();
+            //graph.inizializateMaps();
 
             beaconManager.setRangingListener(new BeaconManager.RangingListener() {
                 @Override
@@ -260,6 +263,12 @@ public class Navigation extends AppCompatActivity {
                                 nearestBeacon.getMajor(),
                                 nearestBeacon.getMinor());
                         Log.d(TAG_DEBUG," "+detectedBeacon.toString());
+                        // If we have not already initialized the map, we've to do it.
+                        if(buildingMap == null){
+                            buildingMap = dbHelper.getMap(nearestBeacon.getMajor());
+                            graph = new GraphMap(buildingMap);
+                        }
+
                         currentNode = graph.getNodeFromBeacon(detectedBeacon);
                         if(currentNode==null) {
                             Log.d(TAG_DEBUG, "ERROR: DETECTED BEACON IS NOT ASSOCIATED TO ANY NODE");

@@ -21,13 +21,16 @@ public class Node {
 
     public Node(){}
 
-    public void setAudio(String audio) {     this.audio = audio; }
+    public void setAudio(String audio) { this.audio = audio; }
     public void setEdges(LinkedList<Edge> edges) {this.edges = edges; }
     public void setAudio_Edges(LinkedList<Edge> e, String a, CATEGORY c){
         setAudio(a);
         setEdges(e);
         setCategory(c);
     }
+
+    public void addEdge(Edge e){ this.edges.add(e); }
+
     public String getAudio() {  return audio; }
 
     public LinkedList<Edge> getEdges() { return edges; }
