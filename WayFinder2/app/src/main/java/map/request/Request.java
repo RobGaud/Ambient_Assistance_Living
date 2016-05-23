@@ -7,8 +7,11 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import map.persistence.DBHelper;
 
 /**
  * Created by Andrea on 17/05/2016.
@@ -24,11 +27,13 @@ public class Request {
     private String key;
     private String value;
     private String res;
+    private DBHelper dbHelper;
 
-    public Request(String url,String key, String value){
+    public Request(String url,String key, String value, DBHelper dbHelper){
         this.url = url;
         this.value=value;
         this.key = key;
+        this.dbHelper = dbHelper;
     }
 
     public void getRequest(){
@@ -63,10 +68,12 @@ public class Request {
                     }
                     else{
                         //TODO prendi mappe e scrivi in SQLite usando DBHelper
+                        JSONArray mapsArray = response.getJSONArray("maps");
+                        dbHelper.insertMaps(mapsArray);
                     }
                 }
                 catch (JSONException e){
-                    Log.d(TAG_DEBUG_APP+TAG_DEBUG, "JSONException: 'success' field not found");
+                    Log.d(TAG_DEBUG_APP+TAG_DEBUG, "JSONException: bad format for response");
                 }
             }
 

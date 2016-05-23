@@ -16,6 +16,10 @@ import android.util.Log;
 import com.estimote.sdk.Region;
 
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import graph.Edge;
 import graph.Node;
 
@@ -191,5 +195,48 @@ public class DBHelper extends SQLiteOpenHelper {
 
         // Once I have initialized the graph properly, I can return it.
         return graphMap;
+    }
+
+    public void insertMaps(JSONArray maps){
+        //TODO
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS Nodes");
+        db.execSQL("DROP TABLE IF EXISTS Edges");
+        onCreate(db);
+
+        //Once I dropped all the content of the database, I can put the new maps into it
+        for(int i=0; i<maps.length(); i++) {
+            try {
+                JSONObject map = maps.getJSONObject(i);
+                JSONArray nodes = map.getJSONArray("nodes");
+                JSONArray edges = map.getJSONArray("edges");
+
+                for(int j=0; j<nodes.length(); j++){
+                    JSONObject node = nodes.getJSONObject(j);
+                    String audio = node.getString("audio");
+                    int major    = node.getInt("major");
+                    int minor    = node.getInt("major");
+                    String type  = node.getString("category");
+                    int steps    = node.getInt("steps");
+                    this.insertNode(major, minor, type, audio, steps);
+                }
+
+                for(int j=0; j<edges.length(); j++){
+                    JSONObject edge = edges.getJSONObject(j);
+                    String[] nodeFrom = edge.getString("nodeFrom").split(" ");
+                    String[] nodeTo   = edge.getString("nodeTo").split(" ");
+                    int direction = edge.getInt("direction");
+                    int distance  = edge.getInt("distance");
+                    int fromMajor = Integer.parseInt(nodeFrom[0]);
+                    int fromMinor = Integer.parseInt(nodeFrom[1]);
+                    int toMajor   = Integer.parseInt(nodeTo[0]);
+                    int toMinor   = Integer.parseInt(nodeTo[1]);
+                    this.insertEdge(fromMajor, fromMinor, toMajor, toMinor, direction, distance);
+                }
+            }
+            catch (JSONException e){
+                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "Bad format exception in map at index "+i+".");
+            }
+        }
     }
 }

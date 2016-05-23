@@ -44,7 +44,7 @@ public class SplashScreen extends AppCompatActivity {
             //TODO call the database to check dbversion and update it if needed.
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             int dbVersion = prefs.getInt("dbVersion", 0);
-            Request request = new Request(URL_GET_MAPS, "dbVersion", ""+dbVersion);
+            Request request = new Request(URL_GET_MAPS, "dbVersion", ""+dbVersion, dbHelper);
             request.getRequest();
 
             /*SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
