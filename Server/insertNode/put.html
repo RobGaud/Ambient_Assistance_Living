@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Insert Node</title>
+</head>
+<style>
+	.asterisk_input:after {
+	content:" *"; 
+	color: #e32;
+	position: absolute; 
+	margin: 0px 0px 0px 164px; 
+	font-size: xx-normal; 
+	padding: 0 5px 0 0; }
+</style>
+<body>
+
+	<form method="post" action="insertNode.php">
+		<div>
+			<span class="asterisk_input">  </span>
+			<input type="text" id="Major" name="Major" placeholder="Major" required><br/><br/>
+			
+			<span class="asterisk_input">  </span>
+   			<input type="text" id="Minor" name="Minor" placeholder="Minor" required><br/><br/>
+			
+			<span class="asterisk_input">  </span>
+   			<input type="text" id="Audio" name="Audio" placeholder="Audio" required><br/><br/>
+			
+			<span class="asterisk_input">  </span>
+   			<input type="text" id="Type" name="Type" placeholder="Type" required><br/><br/>
+			
+			<span class="asterisk_input">  </span>
+   			<input type="text" id="Steps" name="Steps" placeholder="Steps" required><br/><br/>
+			
+			<input id="submit" name="submit" type="submit" value="Send">
+		</div>
+     </form>
+	 
+</body>
+</html>

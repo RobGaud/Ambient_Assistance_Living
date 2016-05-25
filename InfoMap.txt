@@ -1,0 +1,44 @@
+NODES:
+	STAIRS_A: Beacon Roberto
+			62887-44680
+	STAIRS_B: Beacon Andrea
+			62887-53723
+	HALL: sensoro pro
+			62887-48775
+	WING_B: sesnsoro rob
+			62887-4558
+	GARDEN: no beacon
+			62887-5858
+	EXIT: no beacon	
+			62887-4125
+			
+EDGES:
+	HALL
+		HALL->STAIRS_A	
+			160,5
+		HALL->STAIRS_B
+			340,5
+		HALL->EXIT
+			70,5
+		HALL->GARDEN
+			250,5
+			
+	STAIRS_A
+		STAIRS_A->HALL
+			340,5
+	
+	STAIRS_B
+		STAIRS_B->HALL
+			160,5			
+		STAIRS_B->WING_B
+			340,5
+	
+	WING_B
+		WING_B->STAIRS_B
+			160,5
+	
+	
+		
+	
+	
+	
