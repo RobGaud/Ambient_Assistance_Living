@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,11 +21,12 @@ import utils.ConnectionDetector;
 import map.request.Request;
 
 public class SplashScreen extends AppCompatActivity {
-    private String TAG_DEBUG="SplashScreen";
+    private static String TAG_DEBUG_APP="BLIND_";
+    private static String TAG_DEBUG="SplashScreen";
     public static final String MY_PREFS_NAME = "MyPrefsFile";
     final Context context = this;
 
-    private final String URL_GET_MAPS = "";
+    private static final String URL_GET_MAPS = "http://beaconcontrolflow.altervista.org/WayFinder/getAllMaps.php";
 
     BluetoothPermission bp;
     private ConnectionDetector cd;
@@ -41,23 +43,13 @@ public class SplashScreen extends AppCompatActivity {
         if (cd.isConnectingToInternet()) {
             dbHelper = new DBHelper(getApplicationContext());
 
-            //TODO call the database to check dbversion and update it if needed.
+            // Call the database to check dbversion and update it if needed.
+            Log.d(TAG_DEBUG_APP + TAG_DEBUG, "Preparing the request.");
             SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             int dbVersion = prefs.getInt("dbVersion", 0);
-            Request request = new Request(URL_GET_MAPS, "dbVersion", ""+dbVersion, dbHelper);
+            Request request = new Request(URL_GET_MAPS, "dbVersion", ""+dbVersion, dbHelper, this);
             request.getRequest();
-
-            /*SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
-            editor.putInt("dbVersion", 1);
-            editor.apply();
-
-            SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-            String restoredText = prefs.getString("text", null);
-            if (restoredText != null) {
-            String name = prefs.getString("name", "No name defined");//"No name defined" is the default value.
-            int idName = prefs.getInt("idName", 0); //0 is the default value.
-            }
-            */
+            Log.d(TAG_DEBUG_APP + TAG_DEBUG, "Request prepared.");
 
         }else{
             // Internet Connection is not present
@@ -134,5 +126,12 @@ public class SplashScreen extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void updateVersion(int newDbVersion){
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("dbVersion", newDbVersion);
+        editor.apply();
     }
 }

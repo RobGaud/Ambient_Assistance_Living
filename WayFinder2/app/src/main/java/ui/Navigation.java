@@ -262,7 +262,7 @@ public class Navigation extends AppCompatActivity {
                                 nearestBeacon.getProximityUUID(),
                                 nearestBeacon.getMajor(),
                                 nearestBeacon.getMinor());
-                        Log.d(TAG_DEBUG," "+detectedBeacon.toString());
+                        Log.d(TAG_DEBUG, " "+detectedBeacon.toString());
                         // If we have not already initialized the map, we've to do it.
                         if(buildingMap == null){
                             buildingMap = dbHelper.getMap(nearestBeacon.getMajor());

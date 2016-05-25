@@ -81,7 +81,7 @@ public class GraphMap {
 
         String UUID_String = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
 
-        nodes.put(new Region("DIAG hall", UUID.fromString(UUID_String), 9406, 48775),
+        nodes.put(new Region("DIAG hall", UUID.fromString(UUID_String), 62887, 48775),
                              nodes_array[0]);
 //        nodes_array[0].setSteps(5);
         nodes_array[1].setSteps(14);
@@ -89,16 +89,16 @@ public class GraphMap {
                 nodes_array[1]);
 
         nodes_array[2].setSteps(14);
-        nodes.put(new Region("Stairs B", UUID.fromString(UUID_String), 61272, 53723),
+        nodes.put(new Region("Stairs B", UUID.fromString(UUID_String), 62887, 53723),
                 nodes_array[2]);
 
-        nodes.put(new Region("Wing B", UUID.fromString(UUID_String), 25261, 6695),
+        nodes.put(new Region("Wing B", UUID.fromString(UUID_String), 62887, 4558),
                 nodes_array[3]);
 
-        nodes.put(new Region("Garden Entry", UUID.fromString(UUID_String), null, null),
+        nodes.put(new Region("Garden Entry", UUID.fromString(UUID_String), 62887, 5858),
                 nodes_array[4]);
 
-        nodes.put(new Region("Exit", UUID.fromString(UUID_String), null, null),
+        nodes.put(new Region("Exit", UUID.fromString(UUID_String), 62887, 4125),
                 nodes_array[5]);
 
         nodes_array[0].setAudio("the Hall");

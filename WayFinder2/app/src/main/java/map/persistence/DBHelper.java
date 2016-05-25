@@ -1,19 +1,19 @@
 package map.persistence;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.estimote.sdk.Region;
+import com.pervasivesystems.compasstest.R;
 
 
 import org.json.JSONArray;
@@ -37,7 +37,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static final String NODE_COLUMN_MAJOR = "Major";
     public static final String NODE_COLUMN_MINOR = "Minor";
-    public static final String NODE_COLUMN_TYPE  = "Type";
+    public static final String NODE_COLUMN_CATEGORY = "Category";
     public static final String NODE_COLUMN_AUDIO = "Audio";
     public static final String NODE_COLUMN_STEPS = "Steps";
 
@@ -56,51 +56,49 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public DBHelper(Context context)
     {
-        super(context, DATABASE_NAME , null, 1);
+        super(context, DATABASE_NAME, null, 1);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // TODO Auto-generated method stub
         db.execSQL(
                 "create table Nodes (" +
-                    "Major integer, Minor integer, Type text, Audio text, Steps integer, "+
+                    "Major integer, Minor integer, Category text, Audio text, Steps integer, "+
                     "unique(Major,Minor))"
         );
         db.execSQL(
                 "create table Edges (" +
                     "From_Major integer, From_Minor integer, To_Major integer, To_Minor integer, " +
-                    "Degree integer, Distance integer, "+
+                    "Degree real, Distance real, "+
                     "unique(From_Major,From_Minor,To_Major, To_Minor))"
         );
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // TODO Auto-generated method stub
         db.execSQL("DROP TABLE IF EXISTS Nodes");
         db.execSQL("DROP TABLE IF EXISTS Edges");
         onCreate(db);
     }
 
-    public boolean insertNode(int major, int minor, String type, String audio, int steps){
+    public boolean insertNode(int major, int minor, String category, String audio, int steps){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(NODE_COLUMN_MAJOR, major);
         contentValues.put(NODE_COLUMN_MINOR, minor);
         contentValues.put(NODE_COLUMN_AUDIO, audio);
-        contentValues.put(NODE_COLUMN_TYPE, type);
+        contentValues.put(NODE_COLUMN_CATEGORY, category);
         contentValues.put(NODE_COLUMN_STEPS, steps);
         db.insert("Nodes", null, contentValues);
         return true;
     }
 
-    public boolean insertEdge(int fromMajor, int fromMinor, int toMajor, int toMinor, int degree, int distance){
+    public boolean insertEdge(int fromMajor, int fromMinor, int toMajor, int toMinor, float degree, float distance){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(EDGE_COLUMN_FROM_MAJOR, fromMajor);
         contentValues.put(EDGE_COLUMN_FROM_MINOR, fromMinor);
-        contentValues.put(EDGE_COLUMN_TO_MINOR, toMajor);
+        contentValues.put(EDGE_COLUMN_TO_MAJOR, toMajor);
         contentValues.put(EDGE_COLUMN_TO_MINOR, toMinor);
         contentValues.put(EDGE_COLUMN_DEGREE, degree);
         contentValues.put(EDGE_COLUMN_DISTANCE, distance);
@@ -131,32 +129,31 @@ public class DBHelper extends SQLiteOpenHelper {
         resNodes.moveToFirst();
 
         // Initializing Nodes
-        while(resNodes.isAfterLast() == false){
-            //TODO
+        while( !resNodes.isAfterLast() ){
             // I already know it: it's mapMajor
             // int major    = resNodes.getInt(resNodes.getColumnIndex(NODE_COLUMN_MAJOR));
-            int minor    = resNodes.getInt(resNodes.getColumnIndex(NODE_COLUMN_MINOR));
+            int minor    = resNodes.getInt(   resNodes.getColumnIndex(NODE_COLUMN_MINOR));
             String audio = resNodes.getString(resNodes.getColumnIndex(NODE_COLUMN_AUDIO));
-            String type  = resNodes.getString(resNodes.getColumnIndex(NODE_COLUMN_TYPE));
-            int steps    = resNodes.getInt(resNodes.getColumnIndex(NODE_COLUMN_STEPS));
+            String category  = resNodes.getString(resNodes.getColumnIndex(NODE_COLUMN_CATEGORY));
+            int steps    = resNodes.getInt(   resNodes.getColumnIndex(NODE_COLUMN_STEPS));
 
             Region region = new Region(audio, UUID.fromString(UUID_String), mapMajor, minor);
             Node node = new Node();
             node.setAudio(audio);
             node.setSteps(steps);
-            if(type.equals(STAIRS_LABEL)) node.setCategory(Node.CATEGORY.STAIRS);
-            else if(type.equals(OUTDOOR_LABEL)) node.setCategory(Node.CATEGORY.OUTDOOR);
+            if(category.equals(STAIRS_LABEL)) node.setCategory(Node.CATEGORY.STAIRS);
+            else if(category.equals(OUTDOOR_LABEL)) node.setCategory(Node.CATEGORY.OUTDOOR);
             else{
                 node.setCategory(Node.CATEGORY.ROOM);
-                if(!type.equals(ROOM_LABEL))
-                    Log.d(TAG_DEBUG_APP+TAG_DEBUG, "Tipo non previsto: "+type);
+                if(!category.equals(ROOM_LABEL))
+                    Log.d(TAG_DEBUG_APP+TAG_DEBUG, "Tipo non previsto: "+category);
             }
             graphMap.put(region, node);
             resNodes.moveToNext();
         }
 
         // Initializing Edges
-        while(resEdges.isAfterLast() == false){
+        while( !resEdges.isAfterLast()){
             // I already know it: it's mapMajor
             // int fromMajor = resEdges.getInt(resEdges.getColumnIndex(EDGE_COLUMN_FROM_MAJOR));
             int fromMinor = resEdges.getInt(resEdges.getColumnIndex(EDGE_COLUMN_FROM_MINOR));
@@ -173,23 +170,25 @@ public class DBHelper extends SQLiteOpenHelper {
             resFromNode.moveToFirst(); resToNode.moveToFirst();
 
             String fromAudio = resFromNode.getString(resFromNode.getColumnIndex(NODE_COLUMN_AUDIO));
-            String toAudio   = resFromNode.getString(resToNode.getColumnIndex(NODE_COLUMN_AUDIO));
+            String toAudio   =   resToNode.getString(  resToNode.getColumnIndex(NODE_COLUMN_AUDIO));
 
             Region fromRegion = new Region(fromAudio, UUID.fromString(UUID_String), mapMajor, fromMinor);
-            Region toRegion   = new Region(toAudio,   UUID.fromString(UUID_String), mapMajor,   toMinor);
+            Region toRegion   = new Region(  toAudio, UUID.fromString(UUID_String), mapMajor,   toMinor);
             Node fromNode = graphMap.get(fromRegion);
             if( fromNode == null ){
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "fromNode non trovato. FromMajor="+mapMajor+", fromMinor="+fromMinor);
+                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "fromNode non trovato." +
+                        "FromMajor="+mapMajor+", fromMinor="+fromMinor);
             }
             Node toNode = graphMap.get(toRegion);
             if( toNode == null ){
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "toNode non trovato. toMajor="+mapMajor+", toMinor="+toMinor);
+                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "toNode non trovato." +
+                        "toMajor="+mapMajor+", toMinor="+toMinor);
             }
             Edge edge = new Edge(fromNode, toNode, degree, distance);
             if(fromNode != null) fromNode.addEdge(edge);
             else Log.d(TAG_DEBUG_APP+TAG_DEBUG, "Dato che fromNode è null, non posso inserire l'arco");
-            graphMap.put(fromRegion, fromNode);
 
+            graphMap.put(fromRegion, fromNode);
             resEdges.moveToNext();
         }
 
@@ -197,8 +196,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return graphMap;
     }
 
-    public void insertMaps(JSONArray maps){
-        //TODO
+    public void insertMaps(JSONArray maps, int dbVersion){
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS Nodes");
         db.execSQL("DROP TABLE IF EXISTS Edges");
@@ -208,35 +206,39 @@ public class DBHelper extends SQLiteOpenHelper {
         for(int i=0; i<maps.length(); i++) {
             try {
                 JSONObject map = maps.getJSONObject(i);
+                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "map extracted at index "+i+".");
                 JSONArray nodes = map.getJSONArray("nodes");
                 JSONArray edges = map.getJSONArray("edges");
+                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "nodes and edges extracted at index "+i+".");
 
                 for(int j=0; j<nodes.length(); j++){
                     JSONObject node = nodes.getJSONObject(j);
-                    String audio = node.getString("audio");
-                    int major    = node.getInt("major");
-                    int minor    = node.getInt("major");
-                    String type  = node.getString("category");
-                    int steps    = node.getInt("steps");
-                    this.insertNode(major, minor, type, audio, steps);
+                    String audio = node.getString("Audio");
+                    int major    = node.getInt("Major");
+                    int minor    = node.getInt("Major");
+                    String category  = node.getString("Category");
+                    int steps    = node.getInt("Steps");
+                    this.insertNode(major, minor, category, audio, steps);
                 }
+                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "all nodes inserted in map at index "+i+".");
 
                 for(int j=0; j<edges.length(); j++){
                     JSONObject edge = edges.getJSONObject(j);
-                    String[] nodeFrom = edge.getString("nodeFrom").split(" ");
-                    String[] nodeTo   = edge.getString("nodeTo").split(" ");
-                    int direction = edge.getInt("direction");
-                    int distance  = edge.getInt("distance");
-                    int fromMajor = Integer.parseInt(nodeFrom[0]);
-                    int fromMinor = Integer.parseInt(nodeFrom[1]);
-                    int toMajor   = Integer.parseInt(nodeTo[0]);
-                    int toMinor   = Integer.parseInt(nodeTo[1]);
-                    this.insertEdge(fromMajor, fromMinor, toMajor, toMinor, direction, distance);
+                    float degree = (float)edge.getDouble("Degree");
+                    float distance  = (float)edge.getDouble("Distance");
+                    int fromMajor = edge.getInt("From_Major");
+                    int fromMinor = edge.getInt("From_Minor");
+                    int toMajor   = edge.getInt("To_Major");
+                    int toMinor   = edge.getInt("To_Minor");
+                    this.insertEdge(fromMajor, fromMinor, toMajor, toMinor, degree, distance);
                 }
+                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "all edges inserted in map at index "+i+".");
+
             }
             catch (JSONException e){
                 Log.d(TAG_DEBUG_APP+TAG_DEBUG, "Bad format exception in map at index "+i+".");
             }
         }
+        Log.d(TAG_DEBUG_APP+TAG_DEBUG, "all maps inserted.");
     }
 }
