@@ -19,7 +19,9 @@ public class Node {
         category = c;
     }
 
-    public Node(){}
+    public Node(){
+        this.edges = new LinkedList<>();
+    }
 
     public void setAudio(String audio) { this.audio = audio; }
     public void setEdges(LinkedList<Edge> edges) {this.edges = edges; }

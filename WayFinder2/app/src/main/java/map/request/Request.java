@@ -5,6 +5,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import cz.msebera.android.httpclient.Header;
+
+import com.estimote.sdk.Region;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -13,6 +15,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import graph.Edge;
+import graph.Node;
 import map.persistence.DBHelper;
 import ui.SplashScreen;
 
@@ -81,7 +91,12 @@ public class Request {
                         else{
                             // Otherwise, there is no need to change the local database: we can just end.
                             Log.d(TAG_DEBUG_APP+TAG_DEBUG, "The local database is up-to-date. local version="+dbVersionLocal);
+
+                            //TODO remove when cleaning up
+                            splashScreen.updateVersion(dbVersion);
                         }
+
+
                     }
                 }
                 catch (JSONException e){

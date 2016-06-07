@@ -12,11 +12,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.estimote.sdk.Region;
 import com.pervasivesystems.compasstest.R;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import graph.Edge;
+import graph.Node;
 import map.persistence.DBHelper;
 import request.blt.permission.BluetoothPermission;
-import service.BeaconService;
 import utils.ConnectionDetector;
 import map.request.Request;
 
@@ -37,6 +45,11 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //This line is commented because we want to use a style for this splashscreen
         // setContentView(R.layout.activity_splash_screen);
+        //TODO remove while cleaning up
+        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("dbVersion", 0);
+        editor.apply();
 
         cd = new ConnectionDetector(getApplicationContext());
         // Check if Internet present
@@ -45,7 +58,7 @@ public class SplashScreen extends AppCompatActivity {
 
             // Call the database to check dbversion and update it if needed.
             Log.d(TAG_DEBUG_APP + TAG_DEBUG, "Preparing the request.");
-            SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+            /*SharedPreferences*/ prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
             int dbVersion = prefs.getInt("dbVersion", 0);
             Request request = new Request(URL_GET_MAPS, "dbVersion", ""+dbVersion, dbHelper, this);
             request.getRequest();
@@ -133,5 +146,29 @@ public class SplashScreen extends AppCompatActivity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt("dbVersion", newDbVersion);
         editor.apply();
+
+        //Debug stuff let's see the map returned by DBHelper
+        dbHelper = new DBHelper(getApplicationContext());
+        HashMap<Region, Node> map = dbHelper.getMap(62887);
+        Log.d(TAG_DEBUG_APP+TAG_DEBUG, "map returned, starting printing it.");
+        Set<Region> s = map.keySet();
+        Collection<Node> c = map.values();
+        Iterator<Region> it1 = s.iterator();
+        Iterator<Node> it2 = c.iterator();
+        while(it1.hasNext()){
+            Region r = it1.next();
+            Node   n = it2.next();
+            List<Edge> l = n.getEdges();
+            Iterator<Edge> it3 = l.iterator();
+            Log.d(TAG_DEBUG_APP+TAG_DEBUG, "region  = "+r.getMajor()+", "+r.getMinor()+".");
+            Log.d(TAG_DEBUG_APP+TAG_DEBUG, "node    = "+n.getAudio()+", "+n.getSteps()+", "+n.getCategory()+".");
+            while(it3.hasNext()){
+                Edge e = it3.next();
+                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "   edge = "+e.getNodeFrom()+", "+e.getNodeTo()
+                        +", "+e.getDirection()+", "+e.getDistance());
+            }
+
+        }
+        Log.d(TAG_DEBUG_APP+TAG_DEBUG, "map print ended.");
     }
 }
