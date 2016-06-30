@@ -18,38 +18,20 @@ import org.json.JSONObject;
 
 import graph.Edge;
 import graph.Node;
+import utils.AppConstants;
 
 
 /**
  * Created by roberto on 5/23/16.
+ *
+ * DBHelper is used to interact with the SQLite database for maps storage and retrieve.
  */
+
 public class DBHelper extends SQLiteOpenHelper {
 
-    private final String TAG_DEBUG_APP = "BLIND_";
+    //private final String TAG_DEBUG_APP = "BLIND_";
     private final String TAG_DEBUG = "DBHELPER";
-/*
-    public static final String DATABASE_NAME     = "MyDBName.db";
-    public static final String NODE_TABLE_NAME   = "Nodes";
-    public static final String EDGE_TABLE_NAME   = "Edges";
 
-    public static final String NODE_COLUMN_MAJOR = "Major";
-    public static final String NODE_COLUMN_MINOR = "Minor";
-    public static final String NODE_COLUMN_CATEGORY = "Category";
-    public static final String NODE_COLUMN_AUDIO = "Audio";
-    public static final String NODE_COLUMN_STEPS = "Steps";
-
-    public static final String EDGE_COLUMN_FROM_MAJOR = "From_Major";
-    public static final String EDGE_COLUMN_FROM_MINOR = "From_Minor";
-    public static final String EDGE_COLUMN_TO_MAJOR   = "To_Major";
-    public static final String EDGE_COLUMN_TO_MINOR   = "To_Minor";
-    public static final String EDGE_COLUMN_DEGREE     = "Degree";
-    public static final String EDGE_COLUMN_DISTANCE   = "Distance";
-
-    public static final String UUID_String = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
-    public static final String ROOM_LABEL    = "ROOM";
-    public static final String OUTDOOR_LABEL = "OUTDOOR";
-    public static final String STAIRS_LABEL  = "STAIRS";
-*/
 
     public DBHelper(Context context)
     {
@@ -168,7 +150,7 @@ public class DBHelper extends SQLiteOpenHelper {
             else{
                 node.setCategory(Node.CATEGORY.ROOM);
                 if(!category.equals(PersistenceConstants.ROOM_LABEL))
-                    Log.d(TAG_DEBUG_APP+TAG_DEBUG, "Tipo non previsto: "+category);
+                    Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "Tipo non previsto: "+category);
             }
             graphMap.put(region, node);
             resNodes.moveToNext();
@@ -205,17 +187,17 @@ public class DBHelper extends SQLiteOpenHelper {
             Region toRegion   = new Region(  toAudio, UUID.fromString(PersistenceConstants.UUID_String), mapMajor,   toMinor);
             Node fromNode = graphMap.get(fromRegion);
             if( fromNode == null ){
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "fromNode non trovato." +
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "fromNode non trovato." +
                         "FromMajor="+mapMajor+", fromMinor="+fromMinor);
             }
             Node toNode = graphMap.get(toRegion);
             if( toNode == null ){
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "toNode non trovato." +
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "toNode non trovato." +
                         "toMajor="+mapMajor+", toMinor="+toMinor);
             }
             Edge edge = new Edge(fromNode, toNode, degree, distance);
             if(fromNode != null) fromNode.addEdge(edge);
-            else Log.d(TAG_DEBUG_APP+TAG_DEBUG, "Dato che fromNode è null, non posso inserire l'arco");
+            else Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "Dato che fromNode è null, non posso inserire l'arco");
 
             graphMap.put(fromRegion, fromNode);
 
@@ -240,13 +222,13 @@ public class DBHelper extends SQLiteOpenHelper {
         for(int i=0; i<maps.length(); i++) {
             try {
                 JSONObject map = maps.getJSONObject(i);
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "map extracted at index "+i+".");
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "map extracted at index "+i+".");
                 JSONArray nodes = map.getJSONArray(PersistenceConstants.NODES_LIST_NAME);
                 JSONArray edges = map.getJSONArray(PersistenceConstants.EDGES_LIST_NAME);
                 //TODO remove while cleaning up
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "nodes and edges extracted at index "+i+".");
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "nodes="+nodes);
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "edges="+edges);
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "nodes and edges extracted at index "+i+".");
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "nodes="+nodes);
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "edges="+edges);
 
                 for(int j=0; j<nodes.length(); j++){
                     JSONObject node = nodes.getJSONObject(j);
@@ -258,12 +240,12 @@ public class DBHelper extends SQLiteOpenHelper {
                     int steps       = node.getInt(PersistenceConstants.NODE_COLUMN_STEPS);
 
                     //TODO remove while cleaning up
-                    Log.d(TAG_DEBUG_APP+TAG_DEBUG, "inserting node: major="+major+", minor="+minor
+                    Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "inserting node: major="+major+", minor="+minor
                             +", audio="+audio+", category="+category+", steps="+steps);
 
                     this.insertNode(major, minor, category, audio, steps);
                 }
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "all nodes inserted in map at index "+i+".");
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "all nodes inserted in map at index "+i+".");
 
                 for(int j=0; j<edges.length(); j++){
                     JSONObject edge = edges.getJSONObject(j);
@@ -276,14 +258,14 @@ public class DBHelper extends SQLiteOpenHelper {
                     int toMinor   =         edge.getInt(PersistenceConstants.EDGE_COLUMN_TO_MINOR);
                     this.insertEdge(fromMajor, fromMinor, toMajor, toMinor, degree, distance);
                 }
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "all edges inserted in map at index "+i+".");
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "all edges inserted in map at index "+i+".");
 
             }
             catch (JSONException e){
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "Bad format exception in map at index "+i+".");
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "Bad format exception in map at index "+i+".");
             }
         }
-        Log.d(TAG_DEBUG_APP+TAG_DEBUG, "all maps inserted.");
+        Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "all maps inserted.");
 
         /*
         //Debug stuff

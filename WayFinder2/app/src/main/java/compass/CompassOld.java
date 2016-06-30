@@ -1,15 +1,11 @@
 package compass;
 
-import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
-import android.renderscript.Float2;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
@@ -22,13 +18,17 @@ import java.util.ListIterator;
 import graph.Edge;
 import graph.Node;
 import ui.Navigation;
+import utils.AppConstants;
 
 /**
  * Created by Andrea on 14/04/2016.
+ *
+ * The Compass class is used to check user's direction and to navigate him/her into the building.
+ * It uses the magnetometer inside the phone to get the its orientation.
  */
 public class CompassOld  implements SensorEventListener  {
 
-    private static final String TAG_DEBUG = "BLIND_CompassOld";
+    private static final String TAG_DEBUG = "CompassOld";
     // device sensor manager
     private SensorManager mSensorManager;
 
@@ -52,6 +52,7 @@ public class CompassOld  implements SensorEventListener  {
     private Node currentDestination;
     private String lastDetectedDestination;
 
+    /* For debug purposes
     //initialize the class
     public CompassOld(Context context, Navigation n, ImageView i, TextView tv){
         // initialize your android device sensor capabilities
@@ -61,6 +62,8 @@ public class CompassOld  implements SensorEventListener  {
         iv = i;
         follow = false;
     }
+    */
+
     //initialize the class
     public CompassOld(Context context, Navigation n){
         // initialize your android device sensor capabilities
@@ -93,6 +96,10 @@ public class CompassOld  implements SensorEventListener  {
         unsetDirection();
     }
 
+    /**
+     * This method is automatically called by the underlying system
+     * to get the current direction of the phone.
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
 
@@ -120,17 +127,22 @@ public class CompassOld  implements SensorEventListener  {
         currentDegree = -degree;
 
         //Check whether the user has something in front of him
-        Log.d("provaaa","follow: "+follow);
+        Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG,"follow: "+follow);
         if( currentNode != null && !follow){
             this.checkDirection();
         }
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // not in use
-    }
+    public void onAccuracyChanged(Sensor sensor, int accuracy) { /* not in use */ }
 
+    /**
+     * When the user set a destination node, the setDirection method is called.
+     * It is used to set the current edge he walking on, and the ideal direction he should have to
+     * reach the opposite node. These values will be used by the checkDirection method.
+     * @param degree ideal direction to reach the destination
+     * @param e      the edge on which is walking
+     */
     public void setDirection(float degree,Edge e){
         follow = true;
         direction = degree;
@@ -142,7 +154,7 @@ public class CompassOld  implements SensorEventListener  {
             @Override
             public void run() {
                 // Do something here on the main thread
-                Log.d("Handlers", "Called on main thread");
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "Called on main thread");
                 if(follow) {
                     adjustDirection(CompassOld.degree, direction);
                 }
@@ -166,7 +178,12 @@ public class CompassOld  implements SensorEventListener  {
 
     public Node getCurrentNode(){ return this.currentNode; }
 
-    // Metodo per vedere cosa ha di fronte (quando non siamo in navigazione)
+
+    /**
+     * Given the current position and the orientation of the user,
+     * this method finds out what the user is facing to and inform Navigation activity,
+     * so that the GUI can change properly.
+     */
     public void checkDirection(){
         boolean found=false;
         ListIterator<Edge> directions = currentNode.getEdges().listIterator();
@@ -175,76 +192,80 @@ public class CompassOld  implements SensorEventListener  {
             float direction = e.getDirection();
             float currentDegree = this.currentDegree;
             float range = this.range;
-            Log.d(TAG_DEBUG, "checkDirection: degree= "+degree+" direction: "+direction);
+            Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "checkDirection: degree= "+degree+" direction: "+direction);
 
             if( checkIfInRange(degree, direction - range, direction + range) ){
-                Log.d(TAG_DEBUG, "checkDirection: nodeTo="+e.getNodeTo().getAudio()+"\n");
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "checkDirection: nodeTo="+e.getNodeTo().getAudio()+"\n");
                 found = true;
                 if(!e.getNodeTo().getAudio().equals(lastDetectedDestination)) {
                     lastDetectedDestination = e.getNodeTo().getAudio();
                     activity.changeStatus(e);
                 }
             }
-            Log.d(TAG_DEBUG, "---------------------");
+            Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "---------------------");
         }
         if(!found && lastDetectedDestination != null){
             lastDetectedDestination = null;
             activity.changeStatus(null);
-
         }
-
     }
 
-    // Metodo per correggere la direzione dell'utente (in navigazione)
-    // Nota: per informare l'utente potremmo usare il metodo changeStatus di Navigation
+    /**
+     * adjustDirection checks whether the user is walking in the correct direction,
+     * and correct his/her direction if needed.
+     * @param degree user's current direction
+     * @param direction desired direction
+     */
     public void adjustDirection(float degree, float direction){
 
         if( checkIfInRange(degree, direction-range, direction+range) ){
-            Log.d(TAG_DEBUG, "AdjustDirection: informa l'utente che è nella giusta direzione");
+            Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG,
+                    "AdjustDirection: informa l'utente che è nella giusta direzione");
             Toast.makeText(activity.getApplicationContext(),
-                    "Keep walking on this direction to reach "+currentDestination.getAudio(),
+                    AppConstants.CORRECT_DIRECTION+currentDestination.getAudio(),
                     Toast.LENGTH_SHORT).show();
-
         }
         else if( checkIfInRange(degree, (direction+180)%360-range, (direction+180+range)%360) ){
-            Log.d(TAG_DEBUG, "AdjustDirection: informa l'utente che è nella direzione opposta");
+            Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG,
+                    "AdjustDirection: informa l'utente che è nella direzione opposta");
             Toast.makeText(activity.getApplicationContext(),
-                    "You are walking in the opposite direction.", Toast.LENGTH_SHORT).show();
-
+                    AppConstants.OPPOSITE_DIRECTION, Toast.LENGTH_SHORT).show();
         }
         else if( checkIfInRange(degree, (direction+180)%360+range, direction-range)){
-            Log.d(TAG_DEBUG, "AdjustDirection: informa l'utente che è a sinistra della giusta direzione");
+            Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG,
+                    "AdjustDirection: informa l'utente che è a sinistra della giusta direzione");
             Toast.makeText(activity.getApplicationContext(),
-                    "Turn right to reach "+currentDestination.getAudio(), Toast.LENGTH_SHORT).show();
-
+                   AppConstants.TOO_LEFT_DIRECTION+currentDestination.getAudio(), Toast.LENGTH_SHORT).show();
         }
         else if( checkIfInRange(degree, direction+range, (direction+180)%360+range) ){
             Log.d(TAG_DEBUG, "AdjustDirection: informa l'utente che è a destra della giusta direzione");
             Toast.makeText(activity.getApplicationContext(),
-                    "Turn left to reach "+currentDestination.getAudio(), Toast.LENGTH_SHORT).show();
+                    AppConstants.TOO_RIGHT_DIRECTION+currentDestination.getAudio(), Toast.LENGTH_SHORT).show();
         }
         else{
             Log.d(TAG_DEBUG, "adjustDirection: caso non previsto. degree="+degree+", direction="+direction);
         }
     }
 
-    // Metodo che restituisce true se orientation è compreso tra leftBound e rightBound,
-    // Tenendo conto del fatto che gli angoli sono in mod 360.
+    /**
+     * @return true if orientation <= rightBound and orientation >= leftBound,
+     *         keeping in mind that degrees are mod 360.
+     */
     private boolean checkIfInRange(float orientation, float leftBound, float rightBound){
-        //Log.d(TAG_DEBUG, "checkIfInRange: orientation");
-        if(leftBound <= 0) { // Esempio: direction=10
+
+        if(leftBound <= 0) {
             if( (orientation-360 >= leftBound) || (orientation<=rightBound) )
                 return true;
             else
                 return false;
         }
-        else if( rightBound%360 < leftBound ){ //Esempio: direction=350
+        else if( rightBound%360 < leftBound ){
             if( (orientation>=leftBound && orientation < 360) || (orientation>=0 && orientation<rightBound%360) )
                 return true;
             else
                 return false;
         }
-        else if(leftBound*rightBound > 0 && leftBound < rightBound){ // Caso generale
+        else if(leftBound*rightBound > 0 && leftBound < rightBound){
             if(orientation>=leftBound && orientation <= rightBound)
                 return true;
             else
@@ -256,19 +277,4 @@ public class CompassOld  implements SensorEventListener  {
             return false;
         }
     }
-
 }
-
-/**
- * N.B.: Roberto ha dato per scontato che le direzioni non si sovrappongano,
- *       quando stiamo controllando cosa l'utente ha di fronte.
- */
-
-/**
- * OSS: compassOld ha due costruttori: uno in cui passiamo anche imageview e text(della bussola e
- * gradi)per noi, per debugging.
- * Il secondo costruttore invece no, poi in onEventChanged e text e bussolaImage sono a null non fa
- * null
- *
- *
- */

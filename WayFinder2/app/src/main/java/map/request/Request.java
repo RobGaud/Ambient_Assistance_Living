@@ -1,12 +1,9 @@
 package map.request;
 
-import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
 import cz.msebera.android.httpclient.Header;
 
-import com.estimote.sdk.Region;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -15,14 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import graph.Edge;
-import graph.Node;
 import map.persistence.DBHelper;
 import ui.SplashScreen;
 
@@ -34,12 +23,11 @@ public class Request {
     private static final String TAG_DEBUG_APP = "BLIND_";
     private static final String TAG_DEBUG = "REQUEST";
     private static final String SUCCESS_MISSING  = "0";
-    private static final String SUCCESS_YES_UPDATE = "1";
 
     private String url;
     private String key;
-    private String value;
     private String res;
+    private String value;
     private DBHelper dbHelper;
     private SplashScreen splashScreen;
 
@@ -70,10 +58,12 @@ public class Request {
                 try {
                     String success = response.getString("success");
                     if (success.equals(SUCCESS_MISSING)) {
-                        Log.d(TAG_DEBUG_APP + TAG_DEBUG, "No update is required.");
+                        Log.d(TAG_DEBUG_APP + TAG_DEBUG, "An error occurred.");
+                        res = success;
                         return;
                     }
                     else{
+                        res = success;
                         int dbVersion = response.getInt("dbVersion");
                         int dbVersionLocal = Integer.parseInt(value);
                         if( dbVersionLocal < dbVersion){
@@ -90,7 +80,8 @@ public class Request {
                         }
                         else{
                             // Otherwise, there is no need to change the local database: we can just end.
-                            Log.d(TAG_DEBUG_APP+TAG_DEBUG, "The local database is up-to-date. local version="+dbVersionLocal);
+                            Log.d(TAG_DEBUG_APP+TAG_DEBUG, "The local database is up-to-date." +
+                                                           "local version="+dbVersionLocal);
 
                             //TODO remove when cleaning up
                             splashScreen.updateVersion(dbVersion);

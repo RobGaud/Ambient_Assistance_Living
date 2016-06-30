@@ -1,6 +1,5 @@
 package utils;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,6 +12,9 @@ import com.pervasivesystems.compasstest.R;
 
 /**
  * Created by Andrea on 20/04/2016.
+ *
+ * This class is used to manage WayFinder notifications (e.g, when the app is not in foreground
+ * and the user enters into a building covered by WayFinder).
  */
 public class Utils {
     public final static int ID_NOT_A = 3;
@@ -96,7 +98,4 @@ public class Utils {
 
         notificationManager.cancelAll();
     }
-
-
-
-    }
+}

@@ -2,7 +2,6 @@ package ui;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -12,29 +11,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.estimote.sdk.Region;
 import com.pervasivesystems.compasstest.R;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import graph.Edge;
-import graph.Node;
 import map.persistence.DBHelper;
 import request.blt.permission.BluetoothPermission;
+import utils.AppConstants;
 import utils.ConnectionDetector;
 import map.request.Request;
 
+/** The SplashScreen activity is displayed after the app opening. It checks internet connectivity and
+ *  gives very basic information to properly use te app.
+ */
 public class SplashScreen extends AppCompatActivity {
-    private static String TAG_DEBUG_APP="BLIND_";
     private static String TAG_DEBUG="SplashScreen";
-    public static final String MY_PREFS_NAME = "MyPrefsFile";
     final Context context = this;
 
-    private static final String URL_GET_MAPS = "http://beaconcontrolflow.altervista.org/WayFinder/getAllMaps.php";
+
 
     BluetoothPermission bp;
     private ConnectionDetector cd;
@@ -43,13 +35,6 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //This line is commented because we want to use a style for this splashscreen
-        // setContentView(R.layout.activity_splash_screen);
-        //TODO remove while cleaning up
-        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt("dbVersion", 0);
-        editor.apply();
 
         cd = new ConnectionDetector(getApplicationContext());
         // Check if Internet present
@@ -57,12 +42,14 @@ public class SplashScreen extends AppCompatActivity {
             dbHelper = new DBHelper(getApplicationContext());
 
             // Call the database to check dbversion and update it if needed.
-            Log.d(TAG_DEBUG_APP + TAG_DEBUG, "Preparing the request.");
-            /*SharedPreferences*/ prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+            Log.d(AppConstants.TAG_DEBUG_APP + TAG_DEBUG, "Preparing the request.");
+
+            SharedPreferences prefs = getSharedPreferences(AppConstants.MY_PREFS_NAME, MODE_PRIVATE);
             int dbVersion = prefs.getInt("dbVersion", 0);
-            Request request = new Request(URL_GET_MAPS, "dbVersion", ""+dbVersion, dbHelper, this);
+            Request request = new Request(AppConstants.URL_GET_MAPS, "dbVersion", ""+dbVersion, dbHelper, this);
             request.getRequest();
-            Log.d(TAG_DEBUG_APP + TAG_DEBUG, "Request prepared.");
+
+            Log.d(AppConstants.TAG_DEBUG_APP + TAG_DEBUG, "Request prepared.");
 
         }else{
             // Internet Connection is not present
@@ -97,11 +84,7 @@ public class SplashScreen extends AppCompatActivity {
 
         // set the custom dialog components - text, image and button
         TextView text = (TextView) dialog.findViewById(R.id.text);
-        text.setText("Welcome to WayFinder.\n\n" +
-                "Before starting, please ensure to have Google Talkback service active.\n"
-                +"\nNow, you need to recalibrate the compass inside your phone: " +
-                "to do this, make a complete circle with it. Press \"Ok\" " +
-                "when you've done.\n");
+        text.setText(AppConstants.SPLASH_MESSAGE);
 
         Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom dialog
@@ -125,10 +108,7 @@ public class SplashScreen extends AppCompatActivity {
 
         // set the custom dialog components - text, image and button
         TextView text = (TextView) dialog.findViewById(R.id.text);
-        text.setText("Welcome to WayFinder.\n\n" +
-                "Before starting, please ensure to have Internect Connectivity.\n"
-                +"When you'll press \"OK\", the app will be closed." +
-                "Turn on WiFi or Mobile connection and open the app again.\n");
+        text.setText(AppConstants.NO_CONNECTION_MESSAGE);
 
         Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
 
@@ -142,11 +122,12 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     public void updateVersion(int newDbVersion){
-        SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(AppConstants.MY_PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt("dbVersion", newDbVersion);
         editor.apply();
 
+        /*
         //Debug stuff let's see the map returned by DBHelper
         dbHelper = new DBHelper(getApplicationContext());
         HashMap<Region, Node> map = dbHelper.getMap(62887);
@@ -170,5 +151,6 @@ public class SplashScreen extends AppCompatActivity {
 
         }
         Log.d(TAG_DEBUG_APP+TAG_DEBUG, "map print ended.");
+        */
     }
 }

@@ -9,6 +9,9 @@ import java.util.UUID;
 
 /**
  * Created by Andrea on 17/04/2016.
+ * GraphMap class is used to represent maps in WayFinder.
+ * In particular, the map is stored in a hashMap where each node is indexed by the related Region
+ * (i.e, the related beacon identifier).
  */
 public class GraphMap {
     private LinkedHashMap<Region,Node> nodes;
@@ -26,6 +29,7 @@ public class GraphMap {
         return this.nodes.get(currentRegion);
     }
 
+    /*
     //it provides one inizialization at compilation time of one map
     public void inizializateMaps(){
 
@@ -41,9 +45,10 @@ public class GraphMap {
         nodes_array[3] = new Node();  // Wing B
         nodes_array[4] = new Node();  // Garden_gazebos
         nodes_array[5] = new Node();  // Exit
-        /*nodes_array[6] = new Node();  // Node_Sentinel_B*/
+        nodes_array[6] = new Node();  // Node_Sentinel_B
 
         LinkedList<Edge> e_n0 = new LinkedList<>();
+
         e_n0.add(new Edge( nodes_array[0], nodes_array[1],160,5));
         e_n0.add(new Edge( nodes_array[0], nodes_array[2],340,5));
         e_n0.add(new Edge( nodes_array[0], nodes_array[4],250,5));
@@ -68,8 +73,8 @@ public class GraphMap {
         LinkedList<Edge> e_n5 = new LinkedList<>();
        // e_n5.add(new Edge(nodes_array[5], nodes_array[0],0,20));
 
-        /*LinkedList<Edge> e_n6 = new LinkedList<>();
-        e_n6.add(new Edge(nodes_array[6], nodes_array[1],0,20));*/
+        LinkedList<Edge> e_n6 = new LinkedList<>();
+        e_n6.add(new Edge(nodes_array[6], nodes_array[1],0,20));
 
         nodes_array[0].setAudio_Edges(e_n0," ",Node.CATEGORY.ROOM);
         nodes_array[1].setAudio_Edges(e_n1," ",Node.CATEGORY.STAIRS);
@@ -83,7 +88,7 @@ public class GraphMap {
 
         nodes.put(new Region("DIAG hall", UUID.fromString(UUID_String), 62887, 48775),
                              nodes_array[0]);
-//        nodes_array[0].setSteps(5);
+        //nodes_array[0].setSteps(5);
         nodes_array[1].setSteps(14);
         nodes.put(new Region("Stairs A", UUID.fromString(UUID_String), 62887, 44680),
                 nodes_array[1]);
@@ -110,5 +115,6 @@ public class GraphMap {
 
 
     }
+    */
 
 }

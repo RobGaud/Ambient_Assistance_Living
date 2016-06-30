@@ -11,12 +11,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
-import service.BeaconService;
+import utils.AppConstants;
 
 /**
  * Created by Andrea on 19/04/2016.
+ *
+ * This class is used to check and request bluetooth permission after the app opening.
  */
 public class BluetoothPermission {
     final private String TAG_DEBUG ="BLT_PERMISSION";
@@ -35,12 +36,15 @@ public class BluetoothPermission {
         if (hasWriteContactsPermission != PackageManager.PERMISSION_GRANTED) {
             //shouldShowRequestPermissionRationale() = If this function is called on pre-M, it will always return false.
             if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M){
-                //If this function is called on pre-M, OnRequestPermissionsResultCallback will be suddenly called with correct PERMISSION_GRANTED or PERMISSION_DENIED result.
+                //If this function is called on pre-M, OnRequestPermissionsResultCallback
+                // will be suddenly called with correct PERMISSION_GRANTED or PERMISSION_DENIED result.
+
                 /*ActivityCompat.requestPermissions(activity,
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                         REQUEST_ENABLE_BT);*/
                 enableBLT();
-                Log.d(TAG_DEBUG," Build.VERSION.SDK_INT < Build.VERSION_CODES.M");
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG," Build.VERSION.SDK_INT < Build.VERSION_CODES.M");
+
             }else{
                 if (!ActivityCompat.shouldShowRequestPermissionRationale(activity,Manifest.permission.ACCESS_COARSE_LOCATION)) {
                     showMessageOKCancel("You need to allow access for BLT scanning on Android 6.0 and above.",
@@ -53,7 +57,7 @@ public class BluetoothPermission {
                                 }
 
                             });
-                    Log.d(TAG_DEBUG, "Build.VERSION.SDK_INT >= Build.VERSION_CODES.M");
+                    Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "Build.VERSION.SDK_INT >= Build.VERSION_CODES.M");
                 }
             }
         }else {
@@ -68,10 +72,10 @@ public class BluetoothPermission {
             case REQUEST_ENABLE_BT:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission Granted
-                    Log.d(TAG_DEBUG,"PERMESSO DATO per i permesse!!!");
+                    Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG,"PERMESSO DATO per i permessi!!!");
                 } else {
                     // Permission Denied
-                    Log.d(TAG_DEBUG, "PERMESSO NEGATO per i permesse!!!");
+                    Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "PERMESSO NEGATO per i permessi!!!");
                     //Toast.makeText(activity, "PERMISSION_GRANTED Denied", Toast.LENGTH_SHORT).show();
                     this.showMessageOK("Permissions denied: the app will be closed.",
                             new DialogInterface.OnClickListener(){
@@ -109,11 +113,11 @@ public class BluetoothPermission {
             if (resultCode == activity.RESULT_OK) {
                 // The user open the bluethoot.
                 // The Intent's data Uri identifies which contact was selected.
-                Log.d(TAG_DEBUG,"L utente ha dato il permesso per ACCENDERE il BLT");
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG,"L utente ha dato il permesso per ACCENDERE il BLT");
 
                 // Do something with the contact here (bigger example below)
             }else{ //if(requestCode == RESULT_CANCELED){
-                Log.d(TAG_DEBUG,"L utente non ha dato il permesso");
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG,"L utente non ha dato il permesso");
             }
         }
     }
@@ -150,17 +154,4 @@ public class BluetoothPermission {
                     Manifest.permission.ACCESS_COARSE_LOCATION);
         }
     }
-    /**
-     * NOTEEEE!!!
-     * AGGIUNGERE I DUE METODI NELL'ACTIVITY CHE USA QUESTA CLASSE, PERCHé SONO METODI DELLA CLASSE
-     * ACTIVITY E NON SI RIESCE A OVERRIDE FUORI DALLA CLASSE ACTIVITY
-     * @Override
-        public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-            bp.onRequestPermissionsResult(requestCode,permissions,grantResults);
-        }
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            bp.onActivityResult(requestCode,resultCode,data);
-        }
-     **/
 }
