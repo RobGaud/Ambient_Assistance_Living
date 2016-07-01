@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">WayFinder</string>
+    <string name="navigation_steps_text">There are %1d steps.</string>
+    <string name="navigation_position_text">You are in %1s.</string>
+    <string name="navigation_dialog_text">\n You are in %1s \n</string>
+    <string name="navigation_button_something">In this direction you can reach %1s.</string>
+
+
+    <string name="navigation_button_in_navig">
+        You are walking towards %1s. Click here to stop the navigation.
+    </string>
+
+
 </resources>

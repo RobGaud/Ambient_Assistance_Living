@@ -19,14 +19,14 @@ import utils.AppConstants;
 import utils.ConnectionDetector;
 import map.request.Request;
 
-/** The SplashScreen activity is displayed after the app opening. It checks internet connectivity and
+/**
+ *  Created by roberto.
+ *  The SplashScreen activity is displayed after the app opening. It checks internet connectivity and
  *  gives very basic information to properly use te app.
  */
 public class SplashScreen extends AppCompatActivity {
-    private static String TAG_DEBUG="SplashScreen";
+    private static String TAG_DEBUG = "SplashScreen";
     final Context context = this;
-
-
 
     BluetoothPermission bp;
     private ConnectionDetector cd;
@@ -58,6 +58,7 @@ public class SplashScreen extends AppCompatActivity {
             return;
         }
 
+        // Show up the dialog containing the very basic information about WayFinder usage.
         setDialog();
     }
 

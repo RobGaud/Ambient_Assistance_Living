@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,10 +35,14 @@ import graph.Node;
 import map.persistence.DBHelper;
 import request.blt.permission.BluetoothPermission;
 import service.BeaconService;
+import utils.AppConstants;
 
 public class Navigation extends AppCompatActivity {
 
-    private static final String TAG_DEBUG = "BLIND_Navigation";
+    private static final String TAG_DEBUG = "Navigation";
+
+    final Resources res = getResources();
+
     private  BeaconManager beaconManager;
     private static String UUID;
     private static Region region;
@@ -45,9 +50,9 @@ public class Navigation extends AppCompatActivity {
     final Context context = this;
 
     // Graphical stuff
-    private ImageView compassImage;
+    //private ImageView compassImage;
     private Button navigationButton;
-    private TextView positionText,degreeText,stepsText;
+    private TextView positionText, degreeText, stepsText;
 
     // Navigation stuff
     private Node currentNode;
@@ -88,17 +93,14 @@ public class Navigation extends AppCompatActivity {
 
         UUID = getIntent().getExtras().getString("Region");
         if(UUID != null){
-            Log.d(TAG_DEBUG,"UUID passato: "+UUID);
+            Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG,"UUID passato: "+UUID);
             region = new Region("DIAG department", java.util.UUID.fromString(UUID), null, null);
         }else{
-            Log.d(TAG_DEBUG,"Errore, parametro non passato");
-            //TODO ESCI
+            Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG,"Errore, parametro non passato");
         }
 
         tracks[0] = R.raw.tethys;
         manageAudio= new ManageAudio(tracks,getApplicationContext());
-
-
     }
 
     @Override
@@ -118,30 +120,32 @@ public class Navigation extends AppCompatActivity {
 
         initializeRanging();
 
-        //stoppo il servizio
+        // Once WayFinder is on foreground, we don't need the service anymore. Hence, we can stop it.
         stopService(new Intent(getBaseContext(), BeaconService.class));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG_DEBUG,"onPause()");
+        Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG,"onPause()");
         compass.unregisterListener();
 
         if(bp.hasPermission() == PackageManager.PERMISSION_GRANTED){
-            Log.d(TAG_DEBUG,"abbiamo i permessi");
+            Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG,"abbiamo i permessi");
             beaconManager.stopRanging(region);
             beaconManager.disconnect();
 
             startService(new Intent(getBaseContext(), BeaconService.class));
         }else{
-            Log.d(TAG_DEBUG,"non abbiamo i permessi?!!");
+            Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG,"non abbiamo i permessi?!!");
         }
         statusButton=false;
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+
         bp.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
@@ -150,42 +154,15 @@ public class Navigation extends AppCompatActivity {
         bp.onActivityResult(requestCode, resultCode, data);
     }
 
-    /*** Spostato in CompassOld ***
-     public void notifyDirection(Node currentNode, Navigation a){
-        if( currentNode == null ){
-            Log.d(TAG_DEBUG, "Ma come, un nodo vuoto?");
-            return;
-        }
-        ListIterator<Edge> directions = currentNode.getEdges().listIterator();
-        while( directions.hasNext() ){
-
-            Edge e = directions.next();
-            float direction = e.getDirection();
-            float currentDegree = compass.getCurrentDegree();
-            float range = compass.getRange();
-
-            if(currentDegree >= direction-range && currentDegree <= direction+range){
-                a.changeStatus();
-
-            }
-            Node possibleDestination = e.getNodeTo();
-
-        }
-    }
-    */
     // Metodo usato per informare l'utente della nuova direzione
     public void changeStatus(final Edge possibleDirection){
-        //TODO
-        // Cambia testo bottone
-        // Cambia listener del bottone
         if(possibleDirection == null) {
-            navigationButton.setText("In this direction you cannot reach anything ");
+            navigationButton.setText(AppConstants.NAVIGATION_BUTTON_NOTHING);
             dir=" ";
             navigationButton.setOnClickListener(
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            // TODO avvisare che non c'è nessuna direction
                             Toast.makeText(appCompatActivity,
                                     "Turn around to find new directions.",
                                     Toast.LENGTH_LONG).show();
@@ -196,15 +173,19 @@ public class Navigation extends AppCompatActivity {
             setButtonStartNavigation(possibleDirection,possibleDirection.getNodeTo().getAudio(), possibleDirection.getDirection());
         }
     }
+
     private boolean statusButton = false;
-    String dir=" ";
-    //false=no navigation, ture= navigation
+    String dir="";
+    //false=no navigation, true= navigation
+
     private void setButtonStartNavigation(final Edge e,final String directionName, final float directionDegrees){
-        navigationButton.setText("In this direction you can reach " + directionName+".");
+        navigationButton.setText(String.format(
+                res.getString(R.string.navigation_button_something), directionName));
         if(!dir.equals(directionName)) {
+            // If we found a new direction, we keep track of it, and we notify the user.
             manageAudio.play();
-            dir = new String(directionName);
-            Log.d(TAG_DEBUG,directionName);
+            dir = directionName;
+            Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, directionName);
         }
         navigationButton.setOnClickListener(
                 new View.OnClickListener() {
@@ -212,46 +193,27 @@ public class Navigation extends AppCompatActivity {
                     public void onClick(View v) {
                         if(!statusButton){//statusButton==false
                             Toast.makeText(appCompatActivity,
-                                    "Navigation started", Toast.LENGTH_LONG).show();
+                                    AppConstants.NAVIGATION_TOAST_STARTED, Toast.LENGTH_LONG).show();
                             //compass.unsetDirection();
                             compass.setDirection(directionDegrees,e);
                             statusButton = true;
-                            navigationButton.setText("You are walking towards "+directionName+". Click here to stop the navigation.");
-                            return ;
+                            navigationButton.setText(String.format(
+                                    res.getString(R.string.navigation_button_in_navig), directionName));
+
                         }else{
                             Toast.makeText(appCompatActivity,
                                     "Navigation ended.", Toast.LENGTH_LONG).show();
                             compass.unsetDirection();
                             statusButton = false;
-                            navigationButton.setText("Wait, we are looking for another beacon..");
-                            return;
+                            navigationButton.setText(AppConstants.NAVIGATION_BUTTON_WAITING);
                         }
-                        // TODO modificare testo e listener per disattivare la navigazione
                     }
                 }
         );
     }
-/*
-    private void setButtonStopNavigation(String directionName){
-        navigationButton.setText("You are walking towards "+directionName+". Click here to stop the navigation.");
-        navigationButton.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Toast.makeText(appCompatActivity,
-                                "Navigation ended.", Toast.LENGTH_LONG).show();
-                        compass.unsetDirection();
-                    }
-                }
-        );
-    }*/
 
     private void initializeRanging(){
         if(bp.hasPermission()== PackageManager.PERMISSION_GRANTED) {
-            //final GraphMap graph = new GraphMap(DIAGList);
-            // In generale, dovremmo scaricare la mappa dal server;
-            // Qui, sappiamo già di che edificio parliamo (il DIAG).
-            //graph.inizializateMaps();
 
             beaconManager.setRangingListener(new BeaconManager.RangingListener() {
                 @Override
@@ -262,7 +224,7 @@ public class Navigation extends AppCompatActivity {
                                 nearestBeacon.getProximityUUID(),
                                 nearestBeacon.getMajor(),
                                 nearestBeacon.getMinor());
-                        Log.d(TAG_DEBUG, " "+detectedBeacon.toString());
+                        Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, " "+detectedBeacon.toString());
                         // If we have not already initialized the map, we've to do it.
                         if(buildingMap == null){
                             buildingMap = dbHelper.getMap(nearestBeacon.getMajor());
@@ -271,7 +233,7 @@ public class Navigation extends AppCompatActivity {
 
                         currentNode = graph.getNodeFromBeacon(detectedBeacon);
                         if(currentNode==null) {
-                            Log.d(TAG_DEBUG, "ERROR: DETECTED BEACON IS NOT ASSOCIATED TO ANY NODE");
+                            Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "ERROR: DETECTED BEACON IS NOT ASSOCIATED TO ANY NODE");
                             //TODO return?
                         }
                         /*  TODO
@@ -287,38 +249,46 @@ public class Navigation extends AppCompatActivity {
 
                         //Update the GUI
                         if(currentNode!=null) {
-                            String text = "";
-                            String s="";
+                            //String text = "";
+                            String s = "";
                             if(currentNode.getSteps()!=0) {
-                                text = "" + currentNode.getSteps();
-                                s = "\n and there are\n "+text+" steps";
-                                stepsText.setText("There are " + text + " steps");
+                                //text = "" + currentNode.getSteps();
+                                //s = "\n and there are\n "+text+" steps";
+
+                                // This is a parametric resource. This instruction replaces the commented one.
+                                stepsText.setText(String.format(res.getString(R.string.navigation_steps_text),
+                                                                currentNode.getSteps()));
+                                //stepsText.setText(AppConstants.NAVIGATION_TEXT_STEPS_1 + text +
+                                //                  AppConstants.NAVIGATION_TEXT_STEPS_2);
                             }else{
-                                stepsText.setText("");
+                                stepsText.setText(AppConstants.NAVIGATION_TEXT_NO_STEPS);
                             }
-                                positionText.setText("You are in " + currentNode.getAudio());
-                                if(!lastNode.equals(currentNode.getAudio())) {
-                                    if(currentNode.getSteps()!=0)
-                                        setDialog(currentNode.getAudio()+s);
-                                    else
-                                        setDialog(currentNode.getAudio());
-                                    lastNode = currentNode.getAudio();
-                                }
+
+                            positionText.setText(String.format(res.getString(R.string.navigation_position_text),
+                                                 currentNode.getAudio()));
+                            //positionText.setText(AppConstants.NAVIGATION_TEXT_POSITION +
+                            //                     currentNode.getAudio());
+                            if(!lastNode.equals(currentNode.getAudio())) {
+                                if(currentNode.getSteps()!=0)
+                                    setDialog(currentNode.getAudio()+s);
+                                else
+                                    setDialog(currentNode.getAudio());
+                                lastNode = currentNode.getAudio();
+                            }
                         }else {
-                            positionText.setText("No beacon detected");
+                            positionText.setText(AppConstants.NAVIGATION_TEXT_NO_BEACON);
                         }
-                        // TODO come faccio partire l'audio associato?
                     }
                 }
             });
         }else{
-            Log.d(TAG_DEBUG,"non abbiamo i  permessi");
+            Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "non abbiamo i permessi");
         }
     }
 
     @Override
     public void onBackPressed() {
-        // your code.
+        // your code. In our case, it's a don't care.
     }
 
     public void setDialog(String s){
@@ -329,7 +299,8 @@ public class Navigation extends AppCompatActivity {
 
         // set the custom dialog components - text, image and
         TextView text = (TextView) dialog.findViewById(R.id.text);
-        text.setText( "\n You are in "+s+" \n");
+        text.setText(String.format(res.getString(R.string.navigation_dialog_text), s));
+        //text.setText( "\n You are in "+s+" \n");
 
 
         Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
