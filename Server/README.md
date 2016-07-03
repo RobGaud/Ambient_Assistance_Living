@@ -14,42 +14,42 @@ You can also find us on Linkedin [here](https://www.linkedin.com/in/andrea-bisso
 In this way, the application has not to download every time the informations when one beacon is detected. But it downloads the data at the start(one time), through request to the server. This is done in the splashscreen activity.<br/>
 Whit this scheme we can add, remove and modify the maps dynamically whitout download the app again. <br/>
 Since we have not want to download every time the same maps, the database has a version, called dbVersion. When the app sends the reqeust it sends its dbVersion also. So the server checks if the app has the last data or not. In the positive case the server does not answer whit the maps, in negative case the server aswers whit the maps. The format used is JSON, like this:
-"{
-	"maps": [{
-		"mapName": "DIAG",
-		"nodes": [{
-			"Major": "62887",
-			"Minor": "4125",
-			"Audio": "Exit",
-			"Category": "OUTDOOR",
-			"Steps": "0"
-		}, {
-			"Major": "62887",
-			"Minor": "4558",
-			"Audio": "Wing B",
-			"Category": "ROOM",
-			"Steps": "0"
-		}....],
-		"edges": [{
-			"From_Major": "62887",
-			"From_Minor": "4558",
-			"To_Major": "62887",
-			"To_Minor": "53723",
-			"Degree": "160",
-			"Distance": "5"
-		}, {
-			"From_Major": "62887",
-			"From_Minor": "44680",
-			"To_Major": "62887",
-			"To_Minor": "48775",
-			"Degree": "340",
-			"Distance": "5"
-		}.....]
-	}],
-	"success": 1,
-	"message": "Maps returned successfully.",
-	"dbVersion": "2"
-}".
+"{<br/>
+	"maps": [{<br/>
+		"mapName": "DIAG",<br/>
+		"nodes": [{<br/>
+			"Major": "62887",<br/>
+			"Minor": "4125",<br/>
+			"Audio": "Exit",<br/>
+			"Category": "OUTDOOR",<br/>
+			"Steps": "0"<br/>
+		}, {<br/>
+			"Major": "62887",<br/>
+			"Minor": "4558",<br/>
+			"Audio": "Wing B",<br/>
+			"Category": "ROOM",<br/>
+			"Steps": "0"<br/>
+		}....],<br/>
+		"edges": [{<br/>
+			"From_Major": "62887",<br/>
+			"From_Minor": "4558",<br/>
+			"To_Major": "62887",<br/>
+			"To_Minor": "53723",<br/>
+			"Degree": "160",<br/>
+			"Distance": "5"<br/>
+		}, {<br/>
+			"From_Major": "62887",<br/>
+			"From_Minor": "44680",<br/>
+			"To_Major": "62887",<br/>
+			"To_Minor": "48775",<br/>
+			"Degree": "340",<br/>
+			"Distance": "5"<br/>
+		}.....]<br/>
+	}],<br/>
+	"success": 1,<br/>
+	"message": "Maps returned successfully.",<br/>
+	"dbVersion": "2"<br/>
+}".<br/>
 
 
 /*Poi sotto scrivi una breve descrizione per perché è utile un server
