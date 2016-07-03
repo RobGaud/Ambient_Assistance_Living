@@ -4,10 +4,9 @@ package graph;
 import java.util.LinkedList;
 
 /**
- * Created by Andrea on 17/04/2016.
- */
-
-/** Class Node is one of the basic element for maps representation.
+ *  Created by Andrea on 17/04/2016.
+ *
+ *  Class Node is one of the basic element for maps representation.
  *  Each node represents a important zone into the building (e.g, the hall, the stairs), and
  *  contains information about the type of the zone, the audio message to be played when the user
  *  reaches the place, and the number of stairs (actually used only if the node represents some stairs).
@@ -31,12 +30,8 @@ public class Node {
     }
 
     public void setAudio(String audio) { this.audio = audio; }
+
     public void setEdges(LinkedList<Edge> edges) {this.edges = edges; }
-    public void setAudio_Edges(LinkedList<Edge> e, String a, CATEGORY c){
-        setAudio(a);
-        setEdges(e);
-        setCategory(c);
-    }
 
     public void addEdge(Edge e){ this.edges.add(e); }
 
@@ -48,7 +43,7 @@ public class Node {
 
     public int getSteps() { return steps; }
 
-    public void setCategory(CATEGORY category) {this.category = category;  }
+    public void setCategory(CATEGORY category) { this.category = category; }
 
-    public CATEGORY getCategory() {   return category;  }
+    public CATEGORY getCategory() { return category; }
 }

@@ -42,16 +42,21 @@ public class AppConstants {
     public static final String UUID_String = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
 
     // Navigation GUI texts
-    public static final String NAVIGATION_BUTTON_NOTHING    = "In this direction you cannot reach anything.";
-    public static final String NAVIGATION_BUTTON_SOMETHING  = "In this direction you can reach ";
-    public static final String NAVIGATION_BUTTON_IN_NAVIG_1 = "You are walking towards ";
-    public static final String NAVIGATION_BUTTON_IN_NAVIG_2 = ". Click here to stop the navigation.";
-    public static final String NAVIGATION_BUTTON_WAITING    = "Wait, we are looking for another beacon..";
+    public static final String NAVIGATION_BUTTON_NOTHING = "In this direction you cannot reach anything.";
+    public static final String NAVIGATION_BUTTON_WAITING = "Wait, we are looking for another beacon..";
     public static final String NAVIGATION_TOAST_STARTED  = "Navigation started";
     public static final String NAVIGATION_TEXT_NO_BEACON = "No beacon detected";
-    public static final String NAVIGATION_TEXT_POSITION  = "You are in ";
-    public static final String NAVIGATION_TEXT_STEPS_1   = "There are ";
-    public static final String NAVIGATION_TEXT_STEPS_2   = " steps";
     public static final String NAVIGATION_TEXT_NO_STEPS  = "";
+
+    // ManageAudio constants
+    public static final int FIRST_TRACK_INDEX = 0;
+
+    // Compass constants
+    public static final float DIRECTION_RANGE = 10.0f;
+    public static final int   TIMEOUT         = 6000; // Expressed in milliseconds
+    public static final int   ROUND_ANGLE     = 360;
+    public static final int   STRAIGHT_ANGLE  = 180;
+
+    public static final String SUCCESS_MISSING  = "0";
 
 }

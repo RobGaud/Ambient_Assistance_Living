@@ -36,6 +36,4 @@ public class Edge {
     public void setDistance(int d) { distance=d;   }
 
     public void setDirection(float d){ direction=d; }
-
-
 }

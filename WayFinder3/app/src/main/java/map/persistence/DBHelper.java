@@ -145,6 +145,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Node node = new Node();
             node.setAudio(audio);
             node.setSteps(steps);
+
             if(category.equals(PersistenceConstants.STAIRS_LABEL)) node.setCategory(Node.CATEGORY.STAIRS);
             else if(category.equals(PersistenceConstants.OUTDOOR_LABEL)) node.setCategory(Node.CATEGORY.OUTDOOR);
             else{
@@ -152,6 +153,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 if(!category.equals(PersistenceConstants.ROOM_LABEL))
                     Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "Tipo non previsto: "+category);
             }
+
             graphMap.put(region, node);
             resNodes.moveToNext();
         }
@@ -185,19 +187,24 @@ public class DBHelper extends SQLiteOpenHelper {
 
             Region fromRegion = new Region(fromAudio, UUID.fromString(PersistenceConstants.UUID_String), mapMajor, fromMinor);
             Region toRegion   = new Region(  toAudio, UUID.fromString(PersistenceConstants.UUID_String), mapMajor,   toMinor);
+
             Node fromNode = graphMap.get(fromRegion);
             if( fromNode == null ){
                 Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "fromNode non trovato." +
                         "FromMajor="+mapMajor+", fromMinor="+fromMinor);
             }
+
             Node toNode = graphMap.get(toRegion);
             if( toNode == null ){
                 Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "toNode non trovato." +
                         "toMajor="+mapMajor+", toMinor="+toMinor);
             }
+
             Edge edge = new Edge(fromNode, toNode, degree, distance);
-            if(fromNode != null) fromNode.addEdge(edge);
-            else Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "Dato che fromNode è null, non posso inserire l'arco");
+            if(fromNode != null)
+                fromNode.addEdge(edge);
+            else
+                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "Dato che fromNode è null, non posso inserire l'arco");
 
             graphMap.put(fromRegion, fromNode);
 
@@ -212,7 +219,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return graphMap;
     }
 
-    public void insertMaps(JSONArray maps, int dbVersion){
+    public void insertMaps(JSONArray maps){
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DROP TABLE IF EXISTS "+PersistenceConstants.NODE_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "+PersistenceConstants.EDGE_TABLE_NAME);
@@ -225,10 +232,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "map extracted at index "+i+".");
                 JSONArray nodes = map.getJSONArray(PersistenceConstants.NODES_LIST_NAME);
                 JSONArray edges = map.getJSONArray(PersistenceConstants.EDGES_LIST_NAME);
-                //TODO remove while cleaning up
                 Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "nodes and edges extracted at index "+i+".");
-                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "nodes="+nodes);
-                Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "edges="+edges);
 
                 for(int j=0; j<nodes.length(); j++){
                     JSONObject node = nodes.getJSONObject(j);
@@ -239,7 +243,6 @@ public class DBHelper extends SQLiteOpenHelper {
                     String category = node.getString(PersistenceConstants.NODE_COLUMN_CATEGORY);
                     int steps       = node.getInt(PersistenceConstants.NODE_COLUMN_STEPS);
 
-                    //TODO remove while cleaning up
                     Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "inserting node: major="+major+", minor="+minor
                             +", audio="+audio+", category="+category+", steps="+steps);
 
@@ -253,9 +256,9 @@ public class DBHelper extends SQLiteOpenHelper {
                     float degree   = (float)edge.getDouble(PersistenceConstants.EDGE_COLUMN_DEGREE);
                     float distance = (float)edge.getDouble(PersistenceConstants.EDGE_COLUMN_DISTANCE);
                     int fromMajor  =        edge.getInt(PersistenceConstants.EDGE_COLUMN_FROM_MAJOR);
-                    int fromMinor =         edge.getInt(PersistenceConstants.EDGE_COLUMN_FROM_MINOR);
-                    int toMajor   =         edge.getInt(PersistenceConstants.EDGE_COLUMN_TO_MAJOR);
-                    int toMinor   =         edge.getInt(PersistenceConstants.EDGE_COLUMN_TO_MINOR);
+                    int fromMinor  =        edge.getInt(PersistenceConstants.EDGE_COLUMN_FROM_MINOR);
+                    int toMajor    =        edge.getInt(PersistenceConstants.EDGE_COLUMN_TO_MAJOR);
+                    int toMinor    =        edge.getInt(PersistenceConstants.EDGE_COLUMN_TO_MINOR);
                     this.insertEdge(fromMajor, fromMinor, toMajor, toMinor, degree, distance);
                 }
                 Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "all edges inserted in map at index "+i+".");
@@ -266,45 +269,5 @@ public class DBHelper extends SQLiteOpenHelper {
             }
         }
         Log.d(AppConstants.TAG_DEBUG_APP+TAG_DEBUG, "all maps inserted.");
-
-        /*
-        //Debug stuff
-        Log.d(TAG_DEBUG_APP+TAG_DEBUG, "starting check on database content.");
-        Cursor debugNode = db.rawQuery( "select * from Nodes ", null );
-        Cursor debugEdge = db.rawQuery( "select * from Edges ", null );
-        if(debugNode != null && debugNode.moveToFirst()){
-            Log.d(TAG_DEBUG_APP+TAG_DEBUG, "debugNode has something: let's print it.");
-            while(!debugNode.isAfterLast()){
-                int major    = debugNode.getInt(   debugNode.getColumnIndex(PersistenceConstants.NODE_COLUMN_MAJOR));
-                int minor    = debugNode.getInt(   debugNode.getColumnIndex(PersistenceConstants.NODE_COLUMN_MINOR));
-                String audio = debugNode.getString(debugNode.getColumnIndex(PersistenceConstants.NODE_COLUMN_AUDIO));
-                String category  = debugNode.getString(debugNode.getColumnIndex(PersistenceConstants.NODE_COLUMN_CATEGORY));
-                int steps    = debugNode.getInt(   debugNode.getColumnIndex(PersistenceConstants.NODE_COLUMN_STEPS));
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "major="+major+", minor="+minor+", audio="+audio
-                        +", category="+category+", steps="+steps);
-
-                debugNode.moveToNext();
-            }
-            debugNode.close();
-        }
-        if(debugEdge != null && debugEdge.moveToFirst()){
-            Log.d(TAG_DEBUG_APP+TAG_DEBUG, "debugEdge has something: let's print it.");
-            while(!debugEdge.isAfterLast()){
-                int fromMajor = debugEdge.getInt(debugEdge.getColumnIndex(PersistenceConstants.EDGE_COLUMN_FROM_MAJOR));
-                int fromMinor = debugEdge.getInt(debugEdge.getColumnIndex(PersistenceConstants.EDGE_COLUMN_FROM_MINOR));
-                int toMajor   = debugEdge.getInt(debugEdge.getColumnIndex(PersistenceConstants.EDGE_COLUMN_TO_MAJOR));
-                int toMinor   = debugEdge.getInt(debugEdge.getColumnIndex(PersistenceConstants.EDGE_COLUMN_TO_MINOR));
-                int distance  = debugEdge.getInt(debugEdge.getColumnIndex(PersistenceConstants.EDGE_COLUMN_DISTANCE));
-                int degree    = debugEdge.getInt(debugEdge.getColumnIndex(PersistenceConstants.EDGE_COLUMN_DEGREE));
-                Log.d(TAG_DEBUG_APP+TAG_DEBUG, "fromMajor="+fromMajor+", fromMinor="+fromMinor+
-                        ", toMajor="+toMajor+", toMinor="+toMinor+", distance="+distance+", degree="+degree);
-
-                debugEdge.moveToNext();
-            }
-            if( debugNode != null ) debugNode.close();
-            if( debugEdge != null ) debugEdge.close();
-
-        }
-        */
     }
 }

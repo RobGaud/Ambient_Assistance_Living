@@ -11,24 +11,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
-import com.estimote.sdk.Utils;
-import com.estimote.sdk.connection.internal.BluetoothService;
 import com.pervasivesystems.compasstest.R;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.UUID;
 
 import audio.ManageAudio;
-import compass.CompassOld;
+import compass.Compass;
 import graph.Edge;
 import graph.GraphMap;
 import graph.Node;
@@ -64,7 +59,7 @@ public class Navigation extends AppCompatActivity {
     private static GraphMap graph;
 
     private AppCompatActivity appCompatActivity;
-    private CompassOld compass ;
+    private Compass compass ;
     private ManageAudio manageAudio = null;
     int[] tracks = new int[1];
 
@@ -80,7 +75,7 @@ public class Navigation extends AppCompatActivity {
         stepsText = (TextView) findViewById(R.id.Steps);
         //degreeText = (TextView)findViewById(R.id.degree);
 
-        compass = new CompassOld(this.getApplicationContext(),this);
+        compass = new Compass(this.getApplicationContext(),this);
 
         onNavigation = false;
         currentNode = null;     // Forse ce lo facciamo passare dalla precedente Activity?
