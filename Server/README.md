@@ -13,6 +13,7 @@ You can also find us on Linkedin [here](https://www.linkedin.com/in/andrea-bisso
 *WayFinder Server Side* is a Server used by Android app specifically designed to help the store of the infomrmations concern maps supported by our system <br>
 In this way, the application has not to download every time the informations when one beacon is detected. But it downloads the data at the start(one time), through request to the server. This is done in the splashscreen activity.<br/>
 Whit this scheme we can add, remove and modify the maps dynamically whitout download the app again. <br/>
+Since we have not want to download every time the same maps, the database has a version, called dbVersion. When the app sends the reqeust it sends its dbVersion also. So the server checks if the app has the last data or not.
 
 
 /*Poi sotto scrivi una breve descrizione per perché è utile un server
