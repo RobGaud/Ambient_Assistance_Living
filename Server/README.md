@@ -13,7 +13,43 @@ You can also find us on Linkedin [here](https://www.linkedin.com/in/andrea-bisso
 *WayFinder Server Side* is a Server used by Android app specifically designed to help the store of the infomrmations concern maps supported by our system <br>
 In this way, the application has not to download every time the informations when one beacon is detected. But it downloads the data at the start(one time), through request to the server. This is done in the splashscreen activity.<br/>
 Whit this scheme we can add, remove and modify the maps dynamically whitout download the app again. <br/>
-Since we have not want to download every time the same maps, the database has a version, called dbVersion. When the app sends the reqeust it sends its dbVersion also. So the server checks if the app has the last data or not. In the positive case the server does not answer whit the maps, in negative case the server aswers whit the maps.
+Since we have not want to download every time the same maps, the database has a version, called dbVersion. When the app sends the reqeust it sends its dbVersion also. So the server checks if the app has the last data or not. In the positive case the server does not answer whit the maps, in negative case the server aswers whit the maps. The format used is JSON, like this:
+"{
+	"maps": [{
+		"mapName": "DIAG",
+		"nodes": [{
+			"Major": "62887",
+			"Minor": "4125",
+			"Audio": "Exit",
+			"Category": "OUTDOOR",
+			"Steps": "0"
+		}, {
+			"Major": "62887",
+			"Minor": "4558",
+			"Audio": "Wing B",
+			"Category": "ROOM",
+			"Steps": "0"
+		}....],
+		"edges": [{
+			"From_Major": "62887",
+			"From_Minor": "4558",
+			"To_Major": "62887",
+			"To_Minor": "53723",
+			"Degree": "160",
+			"Distance": "5"
+		}, {
+			"From_Major": "62887",
+			"From_Minor": "44680",
+			"To_Major": "62887",
+			"To_Minor": "48775",
+			"Degree": "340",
+			"Distance": "5"
+		}.....]
+	}],
+	"success": 1,
+	"message": "Maps returned successfully.",
+	"dbVersion": "2"
+}".
 
 
 /*Poi sotto scrivi una breve descrizione per perché è utile un server
