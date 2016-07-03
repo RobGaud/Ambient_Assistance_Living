@@ -42,6 +42,8 @@ This JSON is parsed by app through class DBHelper that it creates a database (al
 The scheme ER is the follow:
 <br><br><img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/Er.png" alt="Drawing"width="400" height="400" align="middle"/>
 <br><br>
+
+We have four entities: Map, Node, Edge, dbVersion. The first rapresents the bilding covered by our system. The Node rapresent the checkpoint (beacon) in the every map. The Edge stores the data about the link between each checkpoints. 
 The server provides also this functions:
 
 * deleteEdge, deleteMap, deleteNode,
