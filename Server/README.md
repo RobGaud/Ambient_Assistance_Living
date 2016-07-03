@@ -38,8 +38,11 @@ Since we have not want to download every time the same maps, the database has a 
 	"dbVersion": "2"<br/>
 }".<br/><br/>
 
+This JSON is parsed by app through class DBHelper that it creates a database (all entities and relations) and save the current dbVersion.
+
 The server provides also this functions:
 
 * deleteEdge, deleteMap, deleteNode,
 * insertEdge, insertMap, insertNode;
+
 
