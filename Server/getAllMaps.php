@@ -31,10 +31,10 @@
 			$map_name        = $row_map['Name'] ;
 			$map["mapName"]=$map_name;
 		
-			//per ogni row facciamo la query sui nodes e edges
+			//for each row we do the query on nodes and edges
 			$Major = $row_map['Major'];			
 			
-			//NODE!
+			//for NODEs
 			$sql_node= $sql_node.$Major."'";	
 			//echo $Major."<BR>";
 			//echo $sql_node."<BR>";
@@ -46,11 +46,12 @@
 					$nodes["Major"]         = $row_node["Major"];
 					$nodes["Minor"]         = $row_node["Minor"];
 					$nodes["Audio"]         = $row_node["Audio"];
+                    $nodes["Category"]         = $row_node["Type"];
 					$nodes["Steps"]         = $row_node["Steps"];
 					array_push($map['nodes'],$nodes);
 				}
 			}			
-			//EDGE!
+			//for EDGEs
 			$sql_edge = $sql_edge.$Major."'";
 			//echo $sql_edge."<BR>";
 			
@@ -89,7 +90,6 @@
 		// echoing JSON response
 		echo json_encode($response);	
 	} else {
-		// no plants found
 		$response["success"] = 0;
 		$response["message"] = "No maps found";		
 		// echoing JSON response
@@ -97,4 +97,4 @@
 	}
     $conn -> close();
 ?>
-	
+	

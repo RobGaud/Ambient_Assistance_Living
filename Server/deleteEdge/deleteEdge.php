@@ -13,7 +13,7 @@
 		die ("Connection failed: " . $conn -> connect_error);
 	}
 			
-	// i campi obbligatori ci sono
+	// mandatory fields
 	$From_Major         = $_REQUEST['From_Major'];
 	$From_Minor     = $_REQUEST['From_Minor'];
 	$To_Major         = $_REQUEST['To_Major'];
@@ -23,7 +23,7 @@
 	$sql = "DELETE FROM edge WHERE  From_Major =".$From_Major." AND From_Minor=".$From_Minor." AND To_Major=".$To_Major." AND To_Minor=".$To_Minor;
 	
 	if ( $conn -> query($sql) === TRUE ) {
-		echo "ok";
+		echo "done";
 		require_once '../updateDbVersion.php';
 	} else {
 		echo "error".$conn -> connect_error;
@@ -31,4 +31,4 @@
 	$conn -> close();
 	
 	}
-?>
+?>

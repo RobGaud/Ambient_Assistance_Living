@@ -12,19 +12,18 @@ require_once '../config.php';
 		die ("Connection failed: " . $conn -> connect_error);
 	}
 			
-	// i campi obbligatori ci sono
+	//mandatory fields
 	$Major         = $_REQUEST['Major'];
 	$Minor     = $_REQUEST['Minor'];
 	$conn->query("SET NAMES 'utf8'");
 	$sql = "DELETE FROM node WHERE Major =".$Major." AND Minor=".$Minor;
 	
 	if ( $conn -> query($sql) === TRUE ) {
-		echo "ok";
+		echo "done";
 		require_once '../updateDbVersion.php';
 	} else {
 		echo "error".$conn -> connect_error;
 	}
-	$conn -> close();
-	
+	$conn -> close();	
 	}
-?>
+?>

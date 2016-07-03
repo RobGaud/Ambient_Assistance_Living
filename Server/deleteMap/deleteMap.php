@@ -12,7 +12,7 @@
 		die ("Connection failed: " . $conn -> connect_error);
 	}
 			
-	// i campi obbligatori ci sono
+	//mandatory fields
 	$Major         = $_REQUEST['Major'];
 
 	
@@ -28,4 +28,4 @@
 	$conn -> close();
 	
 	}
-?>
+?>
