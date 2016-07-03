@@ -10,8 +10,12 @@ You can also find us on Linkedin [here](https://www.linkedin.com/in/andrea-bisso
 # WayFinder - Server Side
 <img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/WayFinder_logo.png" alt="Drawing"width="200" height="200" align="middle"/>
 
-*WayFinder* is an Android app specifically designed to help blind people to move around buildings. It uses beacons to locate the user and the magnetometer inside the phone to know how he is oriented and tell him what is facing.<br/>
+*WayFinder Server Side* is a Server used by Android app specifically designed to help the store of the infomrmations concern maps supported by our system <br>
+blind people to move around buildings. It uses beacons to locate the user and the magnetometer inside the phone to know how he is oriented and tell him what is facing.<br/>
 You can find a more detailed description of the concept on [Slideshare](http://www.slideshare.net/RobertoGaudenzi1/ambient-assistance-living).<br/>
+
+/*Poi sotto scrivi una breve descrizione per perché è utile un server
+ Per le mappe, ovvero che così non c'è bisogno di scaricare la app ogni volta che viene aggiunta una mappa*/
 
 The app is composed by four main components:
 * The *BeaconSearch* activity implements the monitoring mechanism, i.e., it checks whether the user entered into the building or not by detecting the beacons inside it. Once a beacon is detected, the app switches to the Navigation activity.
