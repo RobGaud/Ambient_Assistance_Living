@@ -30,5 +30,5 @@ The critical point in this kind of projects is related to the accuracy of users'
 * We reduced the range of beacons, in order to have a more accurate idea of users' position. Clearly, this could increase the number of beacons within the building.
 Another important issue is related to users' direction during the navigation from one checkpoint to another. In particular, when an user is walking toward a given beacon, we compare his direction with a given range related to the path he's going through. Therefore, the width of this range is critical for the accuracy. 
 
-A more detailed description of how the app works is available on [Slideshare](http://www.slideshare.net/RobertoGaudenzi1/wayfinder-final-presentation).
+A more detailed description of how the app works is available on [Slideshare](http://www.slideshare.net/RobertoGaudenzi1/wayfinder-final-presentation).<br/>
 Finally, you can also find a short video demo on [Youtube](https://youtu.be/kZthXlnu1hE).
