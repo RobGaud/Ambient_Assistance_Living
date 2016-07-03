@@ -20,9 +20,15 @@ The app is composed by four main components:
 * Finally, a *background service* was realized to keep executing the monitoring activities also when the app is not in foreground. In this way, the user doesn't need to manually open the app, but he can simply tap on the notification we send to him to open WayFinder and start the navigation.<br/>
 Some screenshot of the app are shown below.<br/> <br/>
 
-   BeaconSearch activity   |  Navigation activity(1)   |   Navigation activity (2)
-:-------------------------:|:-------------------------:|:-------------------------:
-<img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/BeaconSearch.png" alt="Drawing"width="180" height="350" align="middle"/> <br/><br/>  |  <img src="https://github.com/RobGaud/WayFinder/blob/master/images/Navigation_Steps.png" alt="Drawing"width="180" height="350" align="middle"/> <br/><br/> |  <img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/Navigation_Activity.png" alt="Drawing"width="180" height="350" align="middle"/> <br/><br/>
+The BeaconSearch activity  |  The Navigation activity
+:-------------------------:|:-------------------------:
+<img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/BeaconSearch.png" alt="Drawing"width="180" height="350" align="middle"/> <br/><br/>  |  <img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/Navigation_Activity.png" alt="Drawing"width="180" height="350" align="middle"/> <br/><br/>
+
+**A note about accuracy** <br/>
+The critical point in this kind of projects is related to the accuracy of users' location within the building. In particular, if their location is not guaranteed to be precisely determined during the navigation, user could lost themselves (remember WayFinder is oriented to blind users), or worse, they could hurt themselves (e.g., because of non-detected walls/stairs). For this reason, we decided to do the following:
+* We increased the frequency of the signal for our beacons, in order to reduce as much as possible the delay related to beacon discovery;
+* We reduced the range of beacons, in order to have a more accurate idea of users' position. Clearly, this could increase the number of beacons within the building.
+Another important issue is related to users' direction during the navigation from one checkpoint to another. In particular, when an user is walking toward a given beacon, we compare his direction with a given range related to the path he's going through. Therefore, the width of this range is critical for the accuracy. 
 
 A more detailed description of how the app works is available on [Slideshare](http://www.slideshare.net/RobertoGaudenzi1/wayfinder-final-presentation).
 Finally, you can also find a short video demo on [Youtube](https://youtu.be/kZthXlnu1hE).
