@@ -7,7 +7,7 @@ You can find us at robgaudenzi@gmail.com and abissoli.ab@gmail.com.
 You can also find us on Linkedin [here](https://www.linkedin.com/in/andrea-bissoli-537768116) and [here](https://www.linkedin.com/in/roberto-gaudenzi-4b0422116).
 
 
-# WayFinder
+# WayFinder - Server Side
 <img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/WayFinder_logo.png" alt="Drawing"width="200" height="200" align="middle"/>
 
 *WayFinder* is an Android app specifically designed to help blind people to move around buildings. It uses beacons to locate the user and the magnetometer inside the phone to know how he is oriented and tell him what is facing.<br/>
