@@ -27,5 +27,9 @@ The BeaconSearch activity.<br/>
 The Navigation activity.<br/>
 <img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/Navigation_Activity.png" alt="Drawing"width="180" height="350" align="middle"/> <br/><br/>
 
+The BeaconSearch activity  |  The Navigation activity
+:-------------------------:|:-------------------------:
+<img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/BeaconSearch.png" alt="Drawing"width="180" height="350" align="middle"/> <br/><br/>  |  <img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/Navigation_Activity.png" alt="Drawing"width="180" height="350" align="middle"/> <br/><br/>
+
 A more detailed description of how the app works is available on [Slideshare](http://www.slideshare.net/RobertoGaudenzi1/wayfinder-final-presentation).
 Finally, you can also find a short video demo on [Youtube](https://youtu.be/kZthXlnu1hE).
