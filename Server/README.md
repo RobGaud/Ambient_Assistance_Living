@@ -39,6 +39,8 @@ Since we have not want to download every time the same maps, the database has a 
 }".<br/><br/>
 
 This JSON is parsed by app through class DBHelper that it creates a database (all entities and relations) and save the current dbVersion.
+The scheme ER is the follow:
+<img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/Er.png" alt="Drawing"width="200" height="200" align="middle"/>
 
 The server provides also this functions:
 
