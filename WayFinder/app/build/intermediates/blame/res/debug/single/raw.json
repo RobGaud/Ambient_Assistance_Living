@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "/home/roberto/AndroidProjects/WayFinder3/app/build/intermediates/res/merged/debug/raw/tethys.mp3",
+        "source": "/home/roberto/AndroidProjects/WayFinder3/app/src/main/res/raw/tethys.mp3"
+    },
+    {
+        "merged": "/home/roberto/AndroidProjects/WayFinder/app/build/intermediates/res/merged/debug/raw/tethys.mp3",
+        "source": "/home/roberto/AndroidProjects/WayFinder/app/src/main/res/raw/tethys.mp3"
+    }
+]
