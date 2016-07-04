@@ -20,6 +20,8 @@ The app is composed by four main components:
 * Finally, a *background service* was realized to keep executing the monitoring activities also when the app is not in foreground. In this way, the user doesn't need to manually open the app, but he can simply tap on the notification we send to him to open WayFinder and start the navigation.<br/>
 Some screenshot of the app are shown below.<br/> <br/>
 
+**Mockups** <br/>
+
 The BeaconSearch activity  |  The Navigation activity
 :-------------------------:|:-------------------------:
 <img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/BeaconSearch.png" alt="Drawing"width="180" height="350" align="middle"/> <br/><br/>  |  <img src="https://github.com/RobGaud/Ambient_Assistance_Living/blob/master/images/Navigation_Activity.png" alt="Drawing"width="180" height="350" align="middle"/> <br/><br/>
